@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MCQ Test | EduSync</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4361ee;
+      --primary-light: #4895ef;
+      --secondary: #3f37c9;
+      --accent: #4cc9f0;
+      --danger: #f72585;
+      --success: #4ad66d;
+      --warning: #f7b801;
+      --dark: #0a0a0a;
+      --text: #23272f;
+      --text-light: #7a7d85;
+      --card-bg: #fff;
+      --sidebar-bg: #f0f2f5;
+      --sidebar-active: #e9ecef;
+      --shadow: 0 2px 12px rgba(60,60,60,0.08);
+      --progress-bg: #e9ecef;
+      --progress-bar: #4361ee;
+      --button-bg: #4361ee;
+      --button-bg-hover: #3f37c9;
+      --button-disabled: #e0e0e0;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: #f7f8fa;
+      color: var(--text);
+    }
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .sidebar {
+      width: 220px;
+      background: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      box-shadow: 1px 0 0 #e0e0e0;
+      padding-top: 0;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 28px 24px 18px 24px;
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 18px;
+    }
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+    }
+    .logo-text {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text);
+    }
+    .nav-menu {
+      list-style: none;
+      padding: 0 0 0 0;
+      margin: 0;
+    }
+    .nav-item {
+      margin-bottom: 2px;
+    }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 28px;
+      color: var(--text-light);
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 1.08rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-link.active, .nav-link:hover {
+      background: var(--sidebar-active);
+      color: var(--primary);
+    }
+    .nav-icon {
+      width: 22px;
+      text-align: center;
+      font-size: 15px;
+    }
+    .main-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: #f7f8fa;
+    }
+    .top-bar {
+      height: 70px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 36px;
+      box-shadow: 0 2px 12px rgba(60,60,60,0.04);
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .top-bar-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 1px;
+    }
+    .user-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+    .test-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #f7f8fa;
+    }
+    .test-card {
+      width: 100%;
+      max-width: none;
+      background: none;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+    }
+    .test-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 32px 40px 0 40px;
+      gap: 16px;
+    }
+    .test-title {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .progress-container {
+      flex: 1;
+      margin: 0 24px;
+      height: 8px;
+      background: var(--progress-bg);
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--progress-bar);
+      border-radius: 6px;
+      transition: width 0.3s;
+    }
+    .timer {
+      font-weight: 600;
+      color: var(--primary);
+      font-size: 1.08rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .question-area {
+      padding: 32px 40px 0 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      flex: 1;
+    }
+    .question-title {
+      font-weight: 600;
+      margin-bottom: 18px;
+      color: var(--text);
+      font-size: 1.13rem;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .option-card {
+      background: #f7f8fa;
+      border-radius: 10px;
+      border: 1.5px solid #e9ecef;
+      padding: 14px 18px;
+      font-size: 1.08rem;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: border 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .option-card.selected {
+      border: 2px solid var(--primary);
+      background: #eef2ff;
+      box-shadow: 0 2px 8px rgba(67,97,238,0.07);
+    }
+    .option-card input[type="radio"] {
+      margin-right: 12px;
+      accent-color: var(--primary);
+    }
+    .nav-btn-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      margin-top: 24px;
+    }
+    .nav-btn {
+      background: var(--button-bg);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 32px;
+      font-weight: 600;
+      font-size: 1.08rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .nav-btn:disabled {
+      background: var(--button-disabled);
+      color: #b0b0b0;
+      cursor: not-allowed;
+    }
+    .nav-btn.finish {
+      background: var(--danger);
+    }
+    .nav-btn.finish:hover {
+      background: #c2185b;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--button-bg-hover);
+    }
+    .report-card {
+      background: #e9ecef;
+      border-radius: 12px;
+      padding: 32px 24px;
+      margin: 32px 40px 0 40px;
+      color: var(--text);
+      font-size: 1.12rem;
+      width: auto;
+      box-sizing: border-box;
+      text-align: left;
+    }
+    .score {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--primary);
+    }
+    .details {
+      font-size: 1.08rem;
+      margin-bottom: 12px;
+    }
+    .correct { color: var(--success); }
+    .incorrect { color: var(--danger); }
+    .download-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 32px;
+      font-weight: 600;
+      font-size: 1.08rem;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: background 0.2s;
+    }
+    .download-btn:hover {
+      background: var(--secondary);
+    }
+    @media (max-width: 700px) {
+      .test-card, .report-card { padding: 0 0 24px 0; min-width: 0; }
+      .test-meta-row, .question-area, .report-card { padding: 18px 8px 0 8px; }
+    }
+    .result-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(67,97,238,0.08);
+      padding: 40px 32px 32px 32px;
+      max-width: 420px;
+      margin: 48px auto 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .result-status {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+    .result-status.pass { color: var(--primary); }
+    .result-status.fail { color: var(--danger); }
+    .score-ring {
+      width: 110px;
+      height: 110px;
+      margin-bottom: 18px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .score-ring svg {
+      width: 110px;
+      height: 110px;
+      transform: rotate(-90deg);
+    }
+    .score-ring-text {
+      position: absolute;
+      left: 0; right: 0; top: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .result-meta {
+      margin-bottom: 18px;
+      color: var(--text-light);
+      font-size: 1.08rem;
+    }
+    .result-grade {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--primary);
+    }
+    .download-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 32px;
+      font-weight: 600;
+      font-size: 1.08rem;
+      cursor: pointer;
+      margin-top: 18px;
+      transition: background 0.2s;
+    }
+    .download-btn:hover {
+      background: var(--secondary);
+    }
+    .start-card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 4px 24px rgba(67,97,238,0.10);
+      padding: 56px 48px 48px 48px;
+      max-width: 480px;
+      min-width: 320px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .start-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 18px;
+    }
+    .start-timer {
+      font-size: 1.18rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .start-meta {
+      font-size: 1.08rem;
+      color: var(--text-light);
+      margin-bottom: 32px;
+    }
+    .start-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 18px 0;
+      width: 100%;
+      font-size: 1.18rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background 0.2s;
+      box-shadow: 0 2px 8px rgba(67,97,238,0.08);
+    }
+    .start-btn:hover {
+      background: var(--secondary);
+    }
+    @media (max-width: 700px) {
+      .start-card { padding: 32px 8px 32px 8px; min-width: 0; }
+      .start-title { font-size: 1.3rem; }
+      .start-btn { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon"><i class="fas fa-graduation-cap"></i></div>
+        <div class="logo-text">EduSync</div>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <a href="STUDENT.HTML" class="nav-link" title="Back to Dashboard">
+            <i class="fas fa-arrow-left nav-icon"></i>
+          </a>
+        </li>
+        <li class="nav-item"><a href="test.html" class="nav-link active"><i class="fas fa-file-alt nav-icon"></i> <span>Tests</span></a></li>
+      </ul>
+    </aside>
+    <div class="main-area">
+      <div class="top-bar">
+        <div class="top-bar-title">MCQ Test</div>
+        <div class="user-avatar">ST</div>
+      </div>
+      <div class="test-content">
+        <div class="test-card" id="test-area">
+          <!-- Test will be rendered here -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // --- THEME & ACCENT SYNC ---
+    function setTheme(theme) {
+      const root = document.documentElement;
+      if (theme === 'dark') {
+        root.style.setProperty('--dark', '#0a0a0a');
+        root.style.setProperty('--dark-gray', '#1a1a1a');
+        root.style.setProperty('--medium-gray', '#2d2d2d');
+        root.style.setProperty('--light-gray', '#3d3d3d');
+        root.style.setProperty('--text', '#ffffff');
+        root.style.setProperty('--text-light', '#b0b0b0');
+        document.body.classList.remove('light-theme');
+        root.style.removeProperty('--accent-light-bg');
+      } else {
+        root.style.setProperty('--dark', '#f7f8fa');
+        root.style.setProperty('--dark-gray', '#f0f2f5');
+        root.style.setProperty('--medium-gray', '#e9ecef');
+        root.style.setProperty('--light-gray', '#f8f9fa');
+        root.style.setProperty('--text', '#23272f');
+        root.style.setProperty('--text-light', '#7a7d85');
+        document.body.classList.add('light-theme');
+        const accent = localStorage.getItem('settings-accent') || '#4cc9f0';
+        setAccentLightBg(accent);
+      }
+    }
+    function setAccent(color) {
+      const themes = {
+        '#4cc9f0': { primary: '#4361ee', primaryLight: '#4895ef', secondary: '#3f37c9', accent: '#4cc9f0' },
+        '#f72585': { primary: '#f72585', primaryLight: '#ff80ab', secondary: '#b5179e', accent: '#f72585' },
+        '#ff9800': { primary: '#ff9800', primaryLight: '#ffc107', secondary: '#ff5722', accent: '#ff9800' },
+        '#43e97b': { primary: '#43e97b', primaryLight: '#38b000', secondary: '#008e5b', accent: '#43e97b' },
+        '#7c3aed': { primary: '#7c3aed', primaryLight: '#a78bfa', secondary: '#5b21b6', accent: '#7c3aed' },
+        '#ff6f61': { primary: '#ff6f61', primaryLight: '#ffb199', secondary: '#d7263d', accent: '#ff6f61' }
+      };
+      const t = themes[color] || themes['#4cc9f0'];
+      document.documentElement.style.setProperty('--primary', t.primary);
+      document.documentElement.style.setProperty('--primary-light', t.primaryLight);
+      document.documentElement.style.setProperty('--secondary', t.secondary);
+      document.documentElement.style.setProperty('--accent', t.accent);
+      setAccentLightBg(color);
+    }
+    function setAccentLightBg(color) {
+      const accentLightBgMap = {
+        '#4cc9f0': 'rgba(76, 201, 240, 0.13)',
+        '#f72585': 'rgba(247, 37, 133, 0.13)',
+        '#ff9800': 'rgba(255, 152, 0, 0.13)',
+        '#43e97b': 'rgba(67, 233, 123, 0.13)',
+        '#7c3aed': 'rgba(124, 58, 237, 0.13)',
+        '#ff6f61': 'rgba(255, 111, 97, 0.13)'
+      };
+      const accentLightBg = accentLightBgMap[color] || 'rgba(76, 201, 240, 0.13)';
+      document.documentElement.style.setProperty('--accent-light-bg', accentLightBg);
+    }
+    // On load, apply theme and accent from localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+      let theme = localStorage.getItem('settings-theme') || 'light';
+      setTheme(theme);
+      let accent = localStorage.getItem('settings-accent') || '#4cc9f0';
+      setAccent(accent);
+    });
+    // MCQ Test Data
+    const test = {
+      title: 'JavaScript Basics Quiz',
+      teacher: 'Ms. Parker',
+      duration: 120, // seconds
+      questions: [
+        {
+          q: 'Which of the following is a valid way to declare a variable in JavaScript?',
+          options: ['var myVar;', 'let myVar;', 'const myVar;', 'All of the above'],
+          answer: 3
+        },
+        {
+          q: 'What is the output of: console.log(typeof null);',
+          options: ['"object"', '"null"', '"undefined"', '"number"'],
+          answer: 0
+        },
+        {
+          q: 'Which method is used to parse a JSON string into a JavaScript object?',
+          options: ['JSON.parse()', 'JSON.stringify()', 'parse.JSON()', 'parse()'],
+          answer: 0
+        },
+        {
+          q: 'What will this code output? console.log([1,2,3]+[4,5,6]);',
+          options: ['[1,2,3,4,5,6]', '"1,2,34,5,6"', '"1,2,34,5,6"', '"1,2,34,5,6"'],
+          answer: 1
+        },
+        {
+          q: 'Which of these is NOT a JavaScript data type?',
+          options: ['Boolean', 'Float', 'Undefined', 'Symbol'],
+          answer: 1
+        }
+      ]
+    };
+    let state = {
+      started: false,
+      finished: false,
+      answers: [],
+      timeLeft: test.duration,
+      timer: null,
+      current: 0
+    };
+    function renderTest() {
+      const area = document.getElementById('test-area');
+      if (!state.started) {
+        area.innerHTML = `
+          <div class="start-card">
+            <div class="start-title">${test.title}</div>
+            <div class="start-timer"><i class='fa fa-clock'></i> ${formatTime(test.duration)}</div>
+            <div class="start-meta">Teacher: <b>${test.teacher}</b></div>
+            <button class="start-btn" onclick="startTest()">Start Test</button>
+          </div>
+        `;
+        return;
+      }
+      if (state.finished) {
+        area.innerHTML = `
+          <div class='test-meta-row'>
+            <div class='test-title'>${test.title}</div>
+            <div class='progress-container'><div class='progress-bar' style='width:100%'></div></div>
+            <div class='timer'><i class='fa fa-clock'></i> ${formatTime(0)}</div>
+          </div>
+          <div class='report-card' id='report-card'></div>
+        `;
+        showReport();
+        return;
+      }
+      // Progress
+      const progress = Math.round((state.current+1)/test.questions.length*100);
+      // Question
+      const q = test.questions[state.current];
+      let options = '';
+      q.options.forEach((opt, j) => {
+        options += `<label class='option-card${state.answers[state.current]==j?' selected':''}'>
+          <input type='radio' name='q${state.current}' value='${j}' ${state.answers[state.current]==j?'checked':''} onchange='selectAnswer(${state.current},${j})'>
+          ${opt}
+        </label>`;
+      });
+      // Navigation
+      let nav = `<div class='nav-btn-row'>
+        <button class='nav-btn' onclick='prevQ()' ${state.current===0?'disabled':''}>Previous</button>
+        <button class='nav-btn' onclick='nextQ()' ${state.current===test.questions.length-1?'disabled':''}>Next</button>
+        <button class='nav-btn finish' onclick='submitTest()' ${state.answers.length<test.questions.length?'disabled':''}>Finish</button>
+      </div>`;
+      area.innerHTML = `
+        <div class='test-meta-row'>
+          <div class='test-title'>${test.title}</div>
+          <div class='progress-container'><div class='progress-bar' style='width:${progress}%'></div></div>
+          <div class='timer'><i class='fa fa-clock'></i> <span id='timer'>${formatTime(state.timeLeft)}</span></div>
+        </div>
+        <div class='question-area'>
+          <div class='question-title'>Question ${state.current+1} of ${test.questions.length}</div>
+          <div class='question-title' style='font-weight:400;margin-bottom:22px;'>${q.q}</div>
+          <div class='options'>${options}</div>
+          ${nav}
+        </div>
+      `;
+      if (!state.timer) {
+        state.timer = setInterval(() => {
+          state.timeLeft--;
+          const timerElem = document.getElementById('timer');
+          if (timerElem) timerElem.textContent = formatTime(state.timeLeft);
+          if (state.timeLeft <= 0) {
+            clearInterval(state.timer);
+            state.timer = null;
+            submitTest(true);
+          }
+        }, 1000);
+      }
+    }
+    function formatTime(sec) {
+      return `${Math.floor(sec/60)}:${(sec%60).toString().padStart(2,'0')}`;
+    }
+    function startTest() {
+      state.started = true;
+      state.finished = false;
+      state.answers = [];
+      state.timeLeft = test.duration;
+      state.current = 0;
+      if (state.timer) clearInterval(state.timer);
+      state.timer = null;
+      renderTest();
+    }
+    function selectAnswer(qIdx, optIdx) {
+      state.answers[qIdx] = optIdx;
+      renderTest();
+    }
+    function nextQ() {
+      if (state.current < test.questions.length-1) {
+        state.current++;
+        renderTest();
+      }
+    }
+    function prevQ() {
+      if (state.current > 0) {
+        state.current--;
+        renderTest();
+      }
+    }
+    function submitTest(timeUp=false) {
+      state.finished = true;
+      if (state.timer) clearInterval(state.timer);
+      state.timer = null;
+      renderTest();
+    }
+    function showReport() {
+      const card = document.getElementById('report-card');
+      let correct = 0;
+      let total = test.questions.length;
+      let details = '';
+      test.questions.forEach((q, i) => {
+        const userAns = state.answers[i];
+        const isCorrect = userAns == q.answer;
+        if (isCorrect) correct++;
+      });
+      let score = Math.round((correct/total)*100);
+      let passed = score >= 40; // 40% is pass threshold
+      let grade = score >= 90 ? 'A' : score >= 75 ? 'B' : score >= 60 ? 'C' : score >= 40 ? 'D' : 'F';
+      let timeTaken = test.duration - state.timeLeft;
+      // SVG circle progress
+      let radius = 52;
+      let circ = 2 * Math.PI * radius;
+      let offset = circ * (1 - score/100);
+      card.innerHTML = `
+        <div class='result-card'>
+          <div class='result-status ${passed ? 'pass' : 'fail'}'>
+            <span>${passed ? '<i class="fa fa-check-circle"></i> Test Passed' : '<i class="fa fa-times-circle"></i> Test Failed'}</span>
+          </div>
+          <div class='score-ring'>
+            <svg><circle cx='55' cy='55' r='52' fill='none' stroke='#e9ecef' stroke-width='10'/><circle cx='55' cy='55' r='52' fill='none' stroke='var(--primary)' stroke-width='10' stroke-dasharray='${circ}' stroke-dashoffset='${offset}'/></svg>
+            <div class='score-ring-text'>${score}%</div>
+          </div>
+          <div class='result-grade'>Grade: ${grade}</div>
+          <div class='result-meta'>${test.title}</div>
+          <div class='result-meta'>Time Taken: ${formatTime(timeTaken)}</div>
+          <button class='download-btn' onclick='downloadReport()'>Download Report Card</button>
+        </div>
+      `;
+    }
+    function downloadReport() {
+      let correct = 0;
+      let total = test.questions.length;
+      let lines = [];
+      lines.push(`Test: ${test.title}`);
+      lines.push(`Teacher: ${test.teacher}`);
+      test.questions.forEach((q, i) => {
+        const userAns = state.answers[i];
+        const isCorrect = userAns == q.answer;
+        if (isCorrect) correct++;
+        lines.push(`Q${i+1}: ${q.q}`);
+        lines.push(`  Your answer: ${userAns!==undefined?q.options[userAns]:"No answer"} ${isCorrect?"(Correct)":"(Incorrect)"}`);
+        lines.push(`  Correct answer: ${q.options[q.answer]}`);
+      });
+      let score = Math.round((correct/total)*100);
+      lines.unshift(`Score: ${correct} / ${total} (${score}%)`);
+      lines.unshift('Report Card');
+      const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'ReportCard.txt';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+    window.startTest = startTest;
+    window.selectAnswer = selectAnswer;
+    window.nextQ = nextQ;
+    window.prevQ = prevQ;
+    window.submitTest = submitTest;
+    window.downloadReport = downloadReport;
+    renderTest();
+  </script>
+</body>
+</html>

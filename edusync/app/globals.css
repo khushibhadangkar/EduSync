@@ -1,0 +1,226 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========== CSS CUSTOM PROPERTIES ========== */
+:root {
+  --primary: #4361ee;
+  --primary-light: #4895ef;
+  --secondary: #3f37c9;
+  --accent: #4cc9f0;
+  --danger: #f72585;
+  --success: #4ad66d;
+  --warning: #f7b801;
+  --glass: rgba(30, 30, 30, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+/* ========== DARK THEME (default) ========== */
+:root,
+.dark {
+  --bg: #0a0a0a;
+  --bg-card: #1a1a1a;
+  --bg-muted: #2d2d2d;
+  --bg-subtle: #3d3d3d;
+  --text-base: #ffffff;
+  --text-muted: #b0b0b0;
+  --border: rgba(255, 255, 255, 0.1);
+}
+
+/* ========== LIGHT THEME ========== */
+.light {
+  --bg: #f7f8fa;
+  --bg-card: #ffffff;
+  --bg-muted: #e9ecef;
+  --bg-subtle: #f0f2f5;
+  --text-base: #23272f;
+  --text-muted: #7a7d85;
+  --border: #e0e0e0;
+}
+
+/* ========== BASE ========== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-base);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-muted);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* ========== FOCUS STYLES ========== */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ========== GLASS CARD ========== */
+.glass-card {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.light .glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 2px 12px rgba(60, 60, 60, 0.06);
+}
+
+/* ========== PROGRESS BAR ANIMATION ========== */
+@keyframes progressFill {
+  from { width: 0%; }
+  to { width: var(--progress-width); }
+}
+
+.progress-animated {
+  animation: progressFill 1.2s cubic-bezier(0.4, 2, 0.6, 1) forwards;
+}
+
+/* ========== GRADE BADGES ========== */
+.grade-a {
+  background: #14532d;
+  color: #4ad66d;
+  padding: 3px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.grade-b-plus {
+  background: #78350f;
+  color: #f7b801;
+  padding: 3px 14px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+/* ========== SIDEBAR TRANSITION ========== */
+.sidebar-transition {
+  transition: width 0.3s ease, transform 0.3s ease;
+}
+
+/* ========== CUSTOM SWITCH ========== */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: var(--bg-muted);
+  transition: 0.4s;
+  border-radius: 26px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background: var(--primary);
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background: var(--primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+  background: var(--accent);
+}
+
+/* ========== MODAL BACKDROP ========== */
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.light .modal-backdrop {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+/* ========== NAV ACTIVE STATE ========== */
+.nav-active {
+  background: linear-gradient(90deg, rgba(67, 97, 238, 0.2), transparent);
+  border-left: 3px solid var(--primary);
+  color: var(--text-base);
+}
+
+.light .nav-active {
+  background: var(--bg-muted);
+  border-left: 3px solid var(--primary);
+  color: var(--primary);
+}
+
+/* ========== CALENDAR EVENT DOT ========== */
+.cal-event::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ========== COURSE CHAT MESSAGES ========== */
+.chat-sent .chat-bubble {
+  background: var(--primary);
+  color: white;
+  border-radius: 12px 12px 2px 12px;
+  margin-left: auto;
+}
+
+.chat-received .chat-bubble {
+  background: var(--bg-muted);
+  border-radius: 12px 12px 12px 2px;
+}
+
+/* ========== SCORE RING ========== */
+.score-ring-container svg {
+  transform: rotate(-90deg);
+}
+
+/* ========== PRINT HIDDEN ========== */
+@media print {
+  .no-print { display: none !important; }
+}

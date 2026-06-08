@@ -1,0 +1,5431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduSync | Student Portal</title>
+  <!-- Font imports -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* ========== GLOBAL VARIABLES ========== */
+    :root {
+      /* Primary colors */
+      --primary: #4361ee;
+      --primary-light: #4895ef;
+      --secondary: #3f37c9;
+      --accent: #4cc9f0;
+      
+      /* Status colors */
+      --danger: #f72585;
+      --success: #4ad66d;
+      --warning: #f7b801;
+      
+      /* Dark theme colors */
+      --dark: #0a0a0a;
+      --dark-gray: #1a1a1a;
+      --medium-gray: #2d2d2d;
+      --light-gray: #3d3d3d;
+      --text: #ffffff;
+      --text-light: #b0b0b0;
+      
+      /* UI elements */
+      --glass: rgba(30, 30, 30, 0.6);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      
+      /* Light theme overrides - will be set by JS */
+      --light-dark: #f7f8fa;
+      --light-dark-gray: #f0f2f5;
+      --light-medium-gray: #e9ecef;
+      --light-light-gray: #f8f9fa;
+      --light-text: #23272f;
+      --light-text-light: #7a7d85;
+      --light-card: #ffffff;
+      --light-border: #e0e0e0;
+      --light-shadow: 0 2px 12px rgba(60,60,60,0.06);
+    }
+
+    /* ========== BASE STYLES ========== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--dark);
+      color: var(--text);
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 20% 30%, rgba(67, 97, 238, 0.15) 0%, transparent 25%),
+        radial-gradient(circle at 80% 70%, rgba(63, 55, 201, 0.15) 0%, transparent 25%);
+    }
+    body.light-theme {
+      background-color: var(--light-dark);
+      color: var(--light-text);
+      /* Accent-based blur patches for light theme */
+      background-image:
+        radial-gradient(circle at 20% 30%, var(--accent-light-bg, rgba(76, 201, 240, 0.13)) 0%, transparent 25%),
+        radial-gradient(circle at 80% 70%, var(--accent-light-bg, rgba(76, 201, 240, 0.09)) 0%, transparent 25%);
+    }
+
+    /* ========== LAYOUT STRUCTURE ========== */
+    .container {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      min-height: 100vh;
+      transition: grid-template-columns 0.3s;
+    }
+
+    /* Main content grid */
+    .main-content {
+      display: grid;
+      grid-template-rows: 70px 1fr;
+    }
+
+    /* ========== SIDEBAR STYLES ========== */
+    .sidebar {
+      background-color: var(--dark-gray);
+      border-right: 1px solid var(--glass-border);
+      padding: 20px 0;
+      width: 250px;
+      transition: all 0.3s;
+      overflow: hidden;
+    }
+
+    /* Logo section */
+    .logo {
+      display: flex;
+      align-items: center;
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--glass-border);
+      margin-bottom: 20px;
+    }
+
+    .logo-icon {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 10px;
+      color: white;
+    }
+
+    .logo-text {
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    /* Navigation menu */
+    .nav-menu {
+      list-style: none;
+      padding: 0 15px;
+    }
+
+    .nav-item {
+      margin-bottom: 5px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      padding: 12px 15px;
+      color: var(--text-light);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      background-color: var(--medium-gray);
+      color: var(--text);
+    }
+
+    .nav-link.active {
+      background: linear-gradient(90deg, rgba(67, 97, 238, 0.2), transparent);
+      border-left: 3px solid var(--primary);
+    }
+
+    .nav-icon {
+      width: 24px;
+      text-align: center;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+
+    /* ========== TOP BAR STYLES ========== */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 25px;
+      border-bottom: 1px solid var(--glass-border);
+      background-color: var(--dark-gray);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: 70px;
+    }
+
+    /* Search bar */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      background-color: var(--medium-gray);
+      border-radius: 8px;
+      padding: 8px 15px;
+      width: 300px;
+      max-width: 100%;
+    }
+
+    .search-bar input {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      padding: 0 10px;
+      width: 100%;
+      outline: none;
+    }
+
+    .search-bar i {
+      color: var(--text-light);
+    }
+
+    /* User controls */
+    .user-controls {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .notification-btn {
+      position: relative;
+      color: var(--text-light);
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 16px;
+      height: 16px;
+      background-color: var(--danger);
+      border-radius: 50%;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .user-name {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    /* ========== DASHBOARD STYLES ========== */
+    .dashboard {
+      padding: 25px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      grid-template-areas: 
+        "welcome welcome upcoming"
+        "courses courses progress"
+        "stats assignments calendar";
+    }
+
+    /* ========== CARD STYLES ========== */
+    .card {
+      background-color: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .card-action {
+      color: var(--text-light);
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .card-action:hover {
+      color: var(--primary);
+    }
+
+    /* Welcome Card */
+    .welcome-card {
+      grid-area: welcome;
+      background: linear-gradient(135deg, rgba(67, 97, 238, 0.2), rgba(67, 97, 238, 0.05));
+    }
+
+    .welcome-content {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .welcome-text h2 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .welcome-text p {
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    .welcome-stats {
+      display: flex;
+      gap: 30px;
+      margin-top: 20px;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: rgba(72, 149, 239, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-light);
+    }
+
+    .stat-value {
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    /* Upcoming Card */
+    .upcoming-card {
+      grid-area: upcoming;
+    }
+
+    .upcoming-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .upcoming-item:last-child {
+      border-bottom: none;
+    }
+
+    .upcoming-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background-color: rgba(76, 201, 240, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      color: var(--accent);
+      font-size: 14px;
+    }
+
+    .upcoming-details h4 {
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .upcoming-details p {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .upcoming-time {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    /* Courses Card */
+    .courses-card {
+      grid-area: courses;
+    }
+
+    .course-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .course-item {
+      background-color: var(--medium-gray);
+      border-radius: 8px;
+      padding: 15px;
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+
+    .course-item:hover {
+      transform: translateY(-3px);
+    }
+
+    .course-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+      color: white;
+    }
+
+    .course-name {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .course-instructor {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: 10px;
+    }
+
+    .course-progress {
+      height: 4px;
+      background-color: var(--light-gray);
+      border-radius: 2px;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+      transition: width 1.2s cubic-bezier(.4,2,.6,1);
+    }
+
+    .progress-text {
+      font-size: 11px;
+      color: var(--text-light);
+      text-align: right;
+    }
+
+    /* Progress Card */
+    .progress-card {
+      grid-area: progress;
+    }
+
+    .progress-metrics {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .metric {
+      text-align: center;
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .metric-value.good {
+      color: var(--success);
+    }
+
+    .metric-value.average {
+      color: var(--warning);
+    }
+
+    .metric-label {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .progress-chart {
+      height: 150px;
+      background-color: var(--medium-gray);
+      border-radius: 8px;
+      margin-top: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chart-placeholder {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-light);
+      font-size: 14px;
+    }
+
+    /* Stats Card */
+    .stats-card {
+      grid-area: stats;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .stat-card {
+      background-color: var(--medium-gray);
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    /* Assignments Card */
+    .assignments-card {
+      grid-area: assignments;
+    }
+
+    .assignment-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--glass-border);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .assignment-item:hover {
+      background-color: var(--medium-gray);
+      transform: translateY(-2px);
+    }
+
+    .assignment-item:last-child {
+      border-bottom: none;
+    }
+
+    .assignment-status {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 15px;
+    }
+
+    .assignment-status.completed {
+      background-color: var(--success);
+    }
+
+    .assignment-status.pending {
+      background-color: var(--warning);
+    }
+
+    .assignment-status.overdue {
+      background-color: var(--danger);
+    }
+
+    .assignment-details {
+      flex: 1;
+    }
+
+    .assignment-details h4 {
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .assignment-details p {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    .assignment-due {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    /* Calendar Card */
+    .calendar-card {
+      grid-area: calendar;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .calendar-month {
+      font-weight: 600;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 10px;
+    }
+
+    .calendar-nav-btn {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background-color: var(--medium-gray);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: 10px;
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .calendar-day:hover {
+      background-color: var(--medium-gray);
+    }
+
+    .calendar-day.today {
+      background-color: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .calendar-day.event {
+      position: relative;
+    }
+
+    .calendar-day.event::after {
+      content: '';
+      position: absolute;
+      bottom: 3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background-color: var(--accent);
+    }
+
+    .calendar-day.other-month {
+      color: var(--text-light);
+      opacity: 0.5;
+    }
+
+    /* ========== UTILITY CONTROLS ========== */
+
+    /* Sidebar toggle button */
+    #sidebar-toggle {
+      position: fixed;
+      top: 15px;
+      left: 20px;
+      z-index: 1100;
+      transition: left 0.3s;
+    }
+    @media (min-width: 769px) {
+      body:not(.sidebar-collapsed) #sidebar-toggle {
+        left: 260px; /* 250px sidebar + 10px gap */
+      }
+      body.sidebar-collapsed #sidebar-toggle {
+        left: 80px; /* 70px collapsed sidebar + 10px gap */
+      }
+    }
+
+    #sidebar-toggle button {
+      background: var(--medium-gray);
+      color: var(--text);
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      transition: background 0.3s;
+    }
+
+    /* ========== TAB CONTENT STYLES ========== */
+    /* Shared tab styles */
+    .main-tab {
+      padding: 25px;
+      display: none;
+    }
+
+    /* Show the dashboard by default */
+    #tab-dashboard {
+      display: grid;
+    }
+
+    /* Section headers */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    /* ========== COURSES TAB ========== */
+    .courses-view {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .course-card {
+      background: var(--glass);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 16px;
+      padding: 24px;
+      color: white;
+      box-shadow: 0 4px 24px 0 rgba(67,97,238,0.10);
+      display: flex;
+      flex-direction: column;
+      min-height: 220px;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .course-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 32px 0 rgba(67,97,238,0.20);
+    }
+
+    .course-card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .course-card-instructor {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      opacity: 0.85;
+      margin-bottom: 18px;
+    }
+
+    .course-card-instructor img {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+    }
+
+    .course-card-progress-label {
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+      opacity: 0.85;
+    }
+
+    .course-card-progress-bar {
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px;
+      height: 8px;
+      width: 100%;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .course-card-progress-fill {
+      height: 100%;
+      border-radius: 6px;
+      background: white;
+      width: 75%;
+    }
+
+    .course-card-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+      opacity: 0.85;
+      margin-bottom: 12px;
+    }
+
+    .course-card-button {
+      background: white;
+      color: var(--primary);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 24px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+      align-self: flex-start;
+    }
+
+    .course-card-button:hover {
+      background: rgba(255,255,255,0.9);
+    }
+
+    .course-card-bookmark {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      color: rgba(255,255,255,0.8);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .course-card-bookmark.bookmarked {
+      color: var(--accent);
+    }
+
+    /* Courses stats */
+    .courses-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .stat-box {
+      background: var(--medium-gray);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      color: var(--text);
+      font-size: 1.2rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .stat-box-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .stat-box-value.courses {
+      color: var(--primary);
+    }
+
+    .stat-box-value.hours {
+      color: var(--warning);
+    }
+
+    .stat-box-value.modules {
+      color: var(--accent);
+    }
+
+    /* ========== ASSIGNMENTS TAB ========== */
+    .assignments-view {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .assignment-filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .filter-button {
+      background: var(--medium-gray);
+      color: var(--text);
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .filter-button.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .assignment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .assignment-card {
+      background: var(--dark-gray);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .assignment-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(76,201,240,0.15);
+    }
+
+    .assignment-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .assignment-status-badge.submitted {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+    }
+
+    .assignment-status-badge.overdue {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    .assignment-status-badge.pending {
+      background: rgba(247, 184, 1, 0.2);
+      color: var(--warning);
+    }
+
+    .assignment-course {
+      color: var(--text-light);
+      font-size: 13px;
+      margin-left: 10px;
+    }
+
+    .assignment-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .assignment-description {
+      color: var(--text-light);
+      font-size: 15px;
+      margin-bottom: 12px;
+    }
+
+    .assignment-meta {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .assignment-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+    }
+
+    .assignment-meta-item.submitted {
+      color: var(--success);
+    }
+
+    .assignment-meta-item.overdue {
+      color: var(--danger);
+    }
+
+    .assignment-meta-item.pending {
+      color: var(--warning);
+    }
+
+    .assignment-action {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: var(--medium-gray);
+      color: var(--text);
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .assignment-action.submit {
+      background: var(--danger);
+      color: white;
+    }
+
+    .assignment-action.continue {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* Assignment stats */
+    .assignment-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .assignment-stat-box {
+      background: var(--medium-gray);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      color: var(--text);
+      font-size: 1.2rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .assignment-stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .assignment-stat-value.overdue {
+      color: var(--danger);
+    }
+
+    .assignment-stat-value.pending {
+      color: var(--warning);
+    }
+
+    .assignment-stat-value.completed {
+      color: var(--success);
+    }
+
+    .assignment-stat-value.average {
+      color: var(--primary);
+    }
+
+    /* ========== GRADES TAB ========== */
+    .grades-view {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .grades-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .grades-filters {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .grades-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .grade-stat-box {
+      background: var(--medium-gray);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .grade-stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .grade-stat-value.current {
+      color: var(--success);
+    }
+
+    .grade-stat-value.cumulative {
+      color: var(--primary-light);
+    }
+
+    .grade-stat-value.credits {
+      color: var(--warning);
+    }
+
+    .grade-stat-value.courses {
+      color: var(--accent);
+    }
+
+    .grade-stat-label {
+      font-size: 1.1rem;
+      color: var(--text-light);
+    }
+
+    /* Grades table */
+    .grades-table-container {
+      background: var(--dark-gray);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+      margin-bottom: 25px;
+    }
+
+    .grades-table-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+
+    .grades-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 12px;
+    }
+
+    .grades-table thead th {
+      color: var(--text-light);
+      font-size: 1rem;
+      text-align: left;
+      padding-bottom: 8px;
+    }
+
+    .grades-table tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    .grades-table tbody tr:hover {
+      background: var(--medium-gray);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 18px rgba(67,97,238,0.10);
+    }
+
+    .grades-table td {
+      padding: 12px 0;
+    }
+
+    .course-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .course-icon-small {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .course-name {
+      font-weight: 600;
+    }
+
+    .course-code {
+      font-size: 0.95em;
+      color: var(--text-light);
+    }
+
+    .grade-badge {
+      background: #14532d;
+      color: var(--success);
+      padding: 3px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1em;
+    }
+
+    .grade-badge.b-plus {
+      background: #78350f;
+      color: var(--warning);
+    }
+
+    .grade-progress {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .grade-progress-bar {
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px;
+      height: 8px;
+      width: 70px;
+      display: inline-block;
+    }
+
+    .grade-progress-fill {
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .grade-details-link {
+      color: var(--primary-light);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* Grades chart */
+    .grades-chart-container {
+      background: var(--dark-gray);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+      margin-bottom: 25px;
+    }
+
+    .grades-chart-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .grades-chart-placeholder {
+      height: 120px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-light);
+      font-size: 1.1rem;
+    }
+
+    /* ========== PROFILE TAB ========== */
+    .profile-view {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .profile-container {
+      display: flex;
+      gap: 25px;
+      flex-wrap: wrap;
+    }
+
+    /* Profile card */
+    .profile-card {
+      flex: 1;
+      min-width: 300px;
+      max-width: 400px;
+      background: var(--dark-gray);
+      border-radius: 16px;
+      padding: 40px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+
+    .profile-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 18px;
+    }
+
+    .profile-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .profile-major {
+      color: var(--text-light);
+      font-size: 1.05rem;
+      margin-bottom: 2px;
+    }
+
+    .profile-class {
+      color: var(--text-light);
+      font-size: 1rem;
+      margin-bottom: 18px;
+    }
+
+    .profile-edit-button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    /* Profile info */
+    .profile-info {
+      flex: 2;
+      min-width: 300px;
+      background: var(--dark-gray);
+      border-radius: 16px;
+      padding: 40px 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+
+    .profile-info-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .profile-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .profile-info-field label {
+      font-size: 0.98rem;
+      color: var(--text-light);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .profile-info-field input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 7px;
+      border: none;
+      background: var(--medium-gray);
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .profile-info-field input:read-only {
+      cursor: not-allowed;
+    }
+
+    /* ========== SETTINGS TAB ========== */
+    .settings-view {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    /* Settings card */
+    .settings-card {
+      background: var(--dark-gray);
+      border-radius: 14px;
+      padding: 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+
+    .settings-card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Settings item */
+    .settings-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .settings-item-content h4 {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .settings-item-content p {
+      color: var(--text-light);
+      font-size: 0.98rem;
+    }
+
+    /* Toggle switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 46px;
+      height: 26px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--medium-gray);
+      transition: .4s;
+      border-radius: 26px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: var(--primary);
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background: var(--primary);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+      background: var(--accent);
+    }
+
+    /* Select dropdown */
+    .settings-select {
+      background: var(--medium-gray);
+      color: var(--text);
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: 500;
+      min-width: 120px;
+    }
+
+    /* Accent color picker */
+    .accent-picker {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Accent swatch shows its color */
+    .accent-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid var(--medium-gray);
+      cursor: pointer;
+      outline: none;
+      transition: border 0.2s;
+      background: #eee;
+    }
+    .accent-swatch.selected {
+      border: 2px solid var(--primary);
+    }
+    .accent-swatch[data-color] {
+      background: attr(data-color color, color, #eee);
+    }
+
+    /* ========== VIDEO LECTURES TAB ========== */
+    .video-lectures-view {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    /* Featured video */
+    .featured-video {
+      background: var(--dark-gray);
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+      margin-bottom: 25px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .video-player {
+      width: 420px;
+      height: 236px;
+      border-radius: 12px;
+      flex-shrink: 0;
+      max-width: 100%;
+    }
+
+    .video-info {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .video-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .video-meta {
+      color: var(--text-light);
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+    }
+
+    .video-tags {
+      margin-bottom: 12px;
+    }
+
+    .video-tag {
+      background: var(--accent);
+      color: white;
+      padding: 3px 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      margin-right: 8px;
+      display: inline-block;
+    }
+
+    .video-description {
+      color: var(--text-light);
+      font-size: 1rem;
+    }
+
+    /* Video search and filter */
+    .video-controls {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .video-search {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: none;
+      background: var(--medium-gray);
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .video-filter {
+      background: var(--medium-gray);
+      color: var(--text);
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 500;
+      min-width: 150px;
+    }
+
+    /* Video list */
+    .video-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .video-card {
+      background: var(--dark-gray);
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      padding: 18px;
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .video-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 24px rgba(76,201,240,0.15);
+    }
+
+    .video-thumb {
+      width: 90px;
+      height: 60px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .video-card-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .video-card-title {
+      font-weight: 700;
+      font-size: 1.08rem;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .video-card-instructor {
+      color: var(--text-light);
+      font-size: 0.98rem;
+      margin-bottom: 2px;
+    }
+
+    .video-card-tags {
+      margin-bottom: 2px;
+    }
+
+    .video-card-tag {
+      background: var(--accent);
+      color: white;
+      padding: 2px 10px;
+      border-radius: 7px;
+      font-size: 0.92rem;
+      margin-right: 6px;
+      display: inline-block;
+    }
+
+    .video-card-duration {
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    /* ========== DISCUSSION TAB ========== */
+    .discussions-view {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    /* New thread form */
+    .new-thread-form {
+      background: var(--dark-gray);
+      border-radius: 14px;
+      padding: 24px 32px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+      margin-bottom: 25px;
+    }
+
+    .thread-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: flex-end;
+    }
+
+    .thread-form-field {
+      flex: 2;
+      min-width: 180px;
+    }
+
+    .thread-form-field label {
+      font-weight: 600;
+      color: var(--text-light);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .thread-form-field input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 7px;
+      border: none;
+      background: var(--medium-gray);
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .thread-form-submit {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .thread-form-submit button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    /* Thread list */
+    .thread-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      margin-bottom: 25px;
+    }
+
+    .thread-card {
+      background: var(--dark-gray);
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      padding: 18px 24px;
+      transition: all 0.2s ease;
+    }
+
+    .thread-card:hover {
+      box-shadow: 0 6px 24px rgba(76,201,240,0.15);
+    }
+
+    .thread-title {
+      font-weight: 700;
+      font-size: 1.13rem;
+      margin-bottom: 4px;
+    }
+
+    .thread-meta {
+      color: var(--text-light);
+      font-size: 0.98rem;
+      margin-bottom: 6px;
+    }
+
+    .thread-tags {
+      margin-bottom: 6px;
+    }
+
+    .thread-tag {
+      background: var(--accent);
+      color: white;
+      padding: 2px 10px;
+      border-radius: 7px;
+      font-size: 0.92rem;
+      margin-right: 6px;
+      display: inline-block;
+    }
+
+    .thread-replies {
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.98rem;
+      margin-right: 12px;
+    }
+
+    .thread-last-activity {
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    /* Replies */
+    .thread-reply-list {
+      margin-top: 12px;
+      padding-left: 18px;
+      border-left: 2px solid var(--medium-gray);
+    }
+
+    .thread-reply {
+      margin-bottom: 10px;
+    }
+
+    .thread-reply-author {
+      font-weight: 600;
+      color: var(--primary);
+      margin-right: 8px;
+    }
+
+    .thread-reply-content {
+      color: var(--text);
+    }
+
+    /* Thread and Reply Action Buttons */
+    .thread-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .thread-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .thread-action-btn {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .thread-action-btn:hover {
+      background: var(--medium-gray);
+      color: var(--text);
+    }
+
+    .thread-action-btn.edit-btn:hover {
+      color: var(--primary);
+    }
+
+    .thread-action-btn.delete-btn:hover {
+      color: var(--danger);
+    }
+
+    .thread-reply {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+
+    .thread-reply-content-wrapper {
+      flex: 1;
+    }
+
+    .thread-reply-actions {
+      display: flex;
+      gap: 4px;
+      margin-left: 8px;
+    }
+
+    .thread-reply-action-btn {
+      background: none;
+      border: none;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+
+    .thread-reply-action-btn:hover {
+      background: var(--medium-gray);
+      color: var(--text);
+    }
+
+    .thread-reply-action-btn.edit-btn:hover {
+      color: var(--primary);
+    }
+
+    .thread-reply-action-btn.delete-btn:hover {
+      color: var(--danger);
+    }
+
+    /* Reply form */
+    .thread-reply-form {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .thread-reply-input {
+      flex: 1;
+      padding: 7px 10px;
+      border-radius: 6px;
+      border: none;
+      background: var(--medium-gray);
+      color: var(--text);
+    }
+
+    .thread-reply-button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 7px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ========== MODAL STYLES ========== */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.45);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-content {
+      background: var(--dark-gray);
+      padding: 32px;
+      border-radius: 16px;
+      min-width: 340px;
+      max-width: 95vw;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--text-light);
+      cursor: pointer;
+    }
+
+    .modal-title {
+      font-size: 22px;
+      margin-bottom: 18px;
+    }
+
+    /* Profile edit modal */
+    .profile-edit-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .profile-edit-field {
+      margin-bottom: 12px;
+    }
+
+    .profile-edit-field label {
+      font-size: 0.98rem;
+      color: var(--text-light);
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .profile-edit-field input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 7px;
+      border: none;
+      background: var(--medium-gray);
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    .profile-edit-submit {
+      grid-column: span 2;
+      margin-top: 18px;
+    }
+
+    .profile-edit-submit button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    /* Assignment modal */
+    .assignment-modal-content {
+      min-width: 400px;
+    }
+
+    .assignment-modal-description {
+      margin-bottom: 12px;
+    }
+
+    .assignment-modal-upload {
+      margin: 12px 0;
+    }
+
+    .assignment-modal-submit {
+      background: var(--primary);
+      color: white;
+      padding: 8px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* Course modal */
+    .course-modal-content {
+      min-width: 400px;
+    }
+
+    /* Grade details modal */
+    .grade-details-content {
+      min-width: 400px;
+    }
+
+    /* Enroll modal */
+    .enroll-modal-content {
+      min-width: 400px;
+    }
+
+    .enroll-field {
+      margin-bottom: 12px;
+    }
+
+    .enroll-field input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 7px;
+      border: none;
+      background: var(--medium-gray);
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .enroll-submit {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    /* Course Chat Modal */
+    .course-chat-modal-content {
+      min-width: 500px;
+      max-width: 600px;
+      height: 70vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .course-chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--glass-border);
+      margin-bottom: 15px;
+    }
+
+    .course-chat-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .course-chat-instructor {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      color: var(--text-light);
+    }
+
+    .course-chat-instructor img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
+    .course-chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 400px;
+    }
+
+    .course-chat-message {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .course-chat-message.sent {
+      flex-direction: row-reverse;
+    }
+
+    .course-chat-message-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .course-chat-message-content {
+      background: var(--medium-gray);
+      padding: 10px 14px;
+      border-radius: 12px;
+      max-width: 70%;
+      word-wrap: break-word;
+    }
+
+    .course-chat-message.sent .course-chat-message-content {
+      background: var(--primary);
+      color: white;
+    }
+
+    .course-chat-message-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      font-size: 0.85rem;
+    }
+
+    .course-chat-message-author {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .course-chat-message.sent .course-chat-message-author {
+      color: white;
+    }
+
+    .course-chat-message-time {
+      color: var(--text-light);
+      font-size: 0.8rem;
+    }
+
+    .course-chat-message.sent .course-chat-message-time {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .course-chat-message-text {
+      line-height: 1.4;
+    }
+
+    .course-chat-input-container {
+      display: flex;
+      gap: 10px;
+      padding-top: 15px;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .course-chat-input-container input {
+      flex: 1;
+      padding: 10px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--glass-border);
+      background: var(--medium-gray);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .course-chat-input-container input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .course-chat-input-container button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .course-chat-input-container button:hover {
+      background: var(--secondary);
+    }
+
+    .course-chat-input-container button:disabled {
+      background: var(--light-gray);
+      cursor: not-allowed;
+    }
+
+    /* ========== RESPONSIVE DESIGN ========== */
+    @media (max-width: 1200px) {
+      .dashboard {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: 
+          "welcome welcome"
+          "courses courses"
+          "progress upcoming"
+          "stats assignments"
+          "calendar calendar";
+      }
+    }
+
+    @media (max-width: 992px) {
+      .course-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      
+      .profile-info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+      
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+      }
+      
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      
+      .dashboard {
+        grid-template-columns: 1fr;
+        grid-template-areas: 
+          "welcome"
+          "upcoming"
+          "courses"
+          "progress"
+          "stats"
+          "assignments"
+          "calendar";
+      }
+      
+      .welcome-content {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .welcome-stats {
+        justify-content: center;
+      }
+      
+      .course-list {
+        grid-template-columns: 1fr;
+      }
+      
+      .course-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .featured-video {
+        flex-direction: column;
+      }
+      
+      .video-player {
+        width: 100%;
+      }
+    }
+
+    /* Sidebar collapsed state */
+    .sidebar-collapsed .container {
+      grid-template-columns: 70px 1fr;
+    }
+    .sidebar-collapsed .sidebar {
+      width: 70px;
+    }
+    .sidebar-collapsed .logo-text,
+    .sidebar-collapsed .nav-link span {
+      display: none;
+    }
+    .sidebar-collapsed .nav-link {
+      width: 48px;
+      height: 48px;
+      min-width: 48px;
+      min-height: 48px;
+      max-width: 48px;
+      max-height: 48px;
+      padding: 0;
+      justify-content: center;
+      align-items: center;
+      display: flex;
+      border-radius: 12px;
+    }
+    .sidebar-collapsed .nav-icon {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .sidebar-collapsed .nav-link:hover, .sidebar-collapsed .nav-link.active {
+      background-color: var(--medium-gray);
+    }
+
+    /* --- Sidebar Collapsed Overlap Fix --- */
+    .sidebar-collapsed .nav-link span {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .sidebar-collapsed .nav-link {
+      width: 48px !important;
+      height: 48px !important;
+      min-width: 48px !important;
+      min-height: 48px !important;
+      max-width: 48px !important;
+      max-height: 48px !important;
+      padding: 0 !important;
+      margin: 0 auto !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      border-radius: 12px !important;
+      box-sizing: border-box !important;
+    }
+    .sidebar-collapsed .nav-icon {
+      width: 100% !important;
+      height: 100% !important;
+      margin: 0 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 22px !important;
+      box-sizing: border-box !important;
+    }
+    .sidebar-collapsed .nav-menu {
+      padding: 0 !important;
+    }
+    .sidebar-collapsed .nav-item {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    #sidebar-toggle { z-index: 1100; }
+    @media (min-width: 769px) { #sidebar-toggle { display: none !important; } }
+
+    /* ========== LIGHT THEME OVERRIDES ========== */
+    body.light-theme {
+      background-color: var(--light-dark);
+      color: var(--light-text);
+    }
+    body.light-theme .sidebar {
+      background: var(--light-dark-gray);
+      border-right: 1px solid var(--light-border);
+      box-shadow: var(--light-shadow);
+    }
+    body.light-theme .main-content {
+      background: var(--light-dark);
+    }
+    body.light-theme .top-bar {
+      background: var(--light-dark-gray);
+      border-bottom: 1px solid var(--light-border);
+      color: var(--light-text);
+    }
+    body.light-theme .card,
+    body.light-theme .modal-content,
+    body.light-theme .profile-card,
+    body.light-theme .profile-info,
+    body.light-theme .settings-card,
+    body.light-theme .grades-table-container,
+    body.light-theme .grades-chart-container,
+    body.light-theme .featured-video,
+    body.light-theme .thread-card,
+    body.light-theme .new-thread-form {
+      background: var(--light-card) !important;
+      color: var(--light-text);
+      border: 1px solid var(--light-border);
+      box-shadow: var(--light-shadow);
+    }
+    body.light-theme .nav-link {
+      color: var(--light-text-light);
+    }
+    body.light-theme .nav-link.active,
+    body.light-theme .nav-link:hover {
+      background: var(--light-medium-gray);
+      color: var(--light-text);
+      border-left: 3px solid var(--primary);
+    }
+    body.light-theme .nav-icon {
+      color: var(--primary);
+    }
+    body.light-theme .search-bar {
+      background: var(--light-medium-gray);
+      color: var(--light-text);
+    }
+    body.light-theme .search-bar input {
+      color: var(--light-text);
+    }
+    body.light-theme .user-avatar,
+    body.light-theme .profile-avatar {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+    }
+    body.light-theme .course-item,
+    body.light-theme .stat-card,
+    body.light-theme .assignment-card,
+    body.light-theme .assignment-stat-box,
+    body.light-theme .grade-stat-box {
+      background: var(--light-medium-gray) !important;
+      color: var(--light-text);
+      border: 1px solid var(--light-border);
+      box-shadow: var(--light-shadow);
+    }
+    body.light-theme .progress-bar,
+    body.light-theme .course-card-progress-bar,
+    body.light-theme .grade-progress-bar {
+      background: #e0e7ef;
+    }
+    body.light-theme .progress-text,
+    body.light-theme .stat-label,
+    body.light-theme .assignment-description,
+    body.light-theme .assignment-meta-item,
+    body.light-theme .grade-stat-label,
+    body.light-theme .course-instructor,
+    body.light-theme .course-code {
+      color: var(--light-text-light) !important;
+    }
+    body.light-theme .calendar-day.today {
+      background: var(--primary);
+      color: #fff;
+    }
+    body.light-theme .calendar-day.other-month {
+      color: var(--light-text-light);
+      opacity: 0.5;
+    }
+    body.light-theme .filter-button,
+    body.light-theme .settings-select,
+    body.light-theme .video-search,
+    body.light-theme .video-filter,
+    body.light-theme .accent-swatch {
+      background: var(--light-medium-gray);
+      color: var(--light-text);
+      border: 1px solid var(--light-border);
+    }
+    body.light-theme .filter-button.active,
+    body.light-theme .assignment-action.submit,
+    body.light-theme .assignment-action.continue {
+      background: var(--primary);
+      color: #fff;
+    }
+    body.light-theme .assignment-status-badge.submitted {
+      background: rgba(34, 197, 94, 0.12);
+      color: var(--success);
+    }
+    body.light-theme .assignment-status-badge.overdue {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--danger);
+    }
+    body.light-theme .assignment-status-badge.pending {
+      background: rgba(247, 184, 1, 0.12);
+      color: var(--warning);
+    }
+    body.light-theme .modal {
+      background: rgba(240,240,240,0.65);
+    }
+    body.light-theme .modal-content {
+      background: var(--light-card);
+      color: var(--light-text);
+    }
+    body.light-theme .profile-edit-field input,
+    body.light-theme .profile-info-field input {
+      background: var(--light-medium-gray);
+      color: var(--light-text);
+      border: 1px solid var(--light-border);
+    }
+    body.light-theme .profile-edit-submit button,
+    body.light-theme .enroll-submit,
+    body.light-theme .assignment-modal-submit {
+      background: var(--primary);
+      color: #fff;
+    }
+    body.light-theme .course-card {
+      color: #fff;
+      /* keep gradient backgrounds for course cards */
+    }
+    body.light-theme .course-card-meta span {
+      color: var(--light-text);
+    }
+    body.light-theme .video-card {
+      background: var(--light-card);
+      color: var(--light-text);
+      border: 1px solid var(--light-border);
+      box-shadow: var(--light-shadow);
+    }
+    body.light-theme .video-card-instructor,
+    body.light-theme .video-card-duration {
+      color: var(--light-text-light);
+    }
+    body.light-theme .video-card-tag,
+    body.light-theme .video-tag {
+      background: var(--accent);
+      color: #fff;
+    }
+    body.light-theme .thread-tag {
+      background: var(--accent);
+      color: #fff;
+    }
+    body.light-theme .thread-meta,
+    body.light-theme .thread-last-activity {
+      color: var(--light-text-light);
+    }
+    body.light-theme .thread-reply-author {
+      color: var(--primary);
+    }
+    body.light-theme .thread-reply-content {
+      color: var(--light-text);
+    }
+    body.light-theme .thread-action-btn,
+    body.light-theme .thread-reply-action-btn {
+      color: var(--light-text-light);
+    }
+    body.light-theme .thread-action-btn:hover,
+    body.light-theme .thread-reply-action-btn:hover {
+      background: var(--light-medium-gray);
+      color: var(--light-text);
+    }
+    body.light-theme .thread-action-btn.edit-btn:hover,
+    body.light-theme .thread-reply-action-btn.edit-btn:hover {
+      color: var(--primary);
+    }
+    body.light-theme .thread-action-btn.delete-btn:hover,
+    body.light-theme .thread-reply-action-btn.delete-btn:hover {
+      color: var(--danger);
+    }
+    body.light-theme .slider {
+      background: var(--light-medium-gray);
+    }
+    body.light-theme input:checked + .slider {
+      background: var(--primary);
+    }
+    body.light-theme .slider:before {
+      background: var(--primary);
+    }
+    body.light-theme input:checked + .slider:before {
+      background: var(--accent);
+    }
+    body.light-theme .dashboard .card,
+    body.light-theme .dashboard .welcome-card,
+    body.light-theme .dashboard .upcoming-card,
+    body.light-theme .dashboard .courses-card,
+    body.light-theme .dashboard .progress-card,
+    body.light-theme .dashboard .stats-card,
+    body.light-theme .dashboard .assignments-card,
+    body.light-theme .dashboard .calendar-card {
+      background: #fff !important;
+      color: var(--light-text) !important;
+      border: 1px solid #f0f1f3 !important;
+      box-shadow: 0 2px 12px rgba(60,60,60,0.04) !important;
+    }
+    body.light-theme .dashboard .welcome-card {
+      background: linear-gradient(135deg, rgba(67, 97, 238, 0.06), rgba(67, 97, 238, 0.01)), #fff !important;
+      border: 2px solid #e0aaff !important; /* TEMP: debug border, remove after test */
+      box-shadow: 0 2px 12px rgba(60,60,60,0.04) !important;
+    }
+    body.light-theme .dashboard .stat-icon {
+      background: rgba(72, 149, 239, 0.10);
+      color: var(--primary-light);
+    }
+    body.light-theme .dashboard .stat-value,
+    body.light-theme .dashboard .stat-number {
+      color: var(--primary);
+    }
+    body.light-theme .dashboard .stat-label {
+      color: var(--light-text-light);
+    }
+    body.light-theme .dashboard .progress-bar {
+      background: #e0e7ef;
+    }
+    body.light-theme .dashboard .progress-text {
+      color: var(--light-text-light);
+    }
+    body.light-theme .dashboard .assignment-status.completed {
+      background: var(--success);
+    }
+    body.light-theme .dashboard .assignment-status.pending {
+      background: var(--warning);
+    }
+    body.light-theme .dashboard .assignment-status.overdue {
+      background: var(--danger);
+    }
+    body.light-theme .dashboard .calendar-header,
+    body.light-theme .dashboard .calendar-weekdays {
+      background: transparent;
+      color: var(--light-text-light);
+    }
+    body.light-theme .dashboard .calendar-day.today {
+      background: var(--primary);
+      color: #fff;
+    }
+    body.light-theme .dashboard .calendar-day.event::after {
+      background: var(--accent);
+    }
+    body.light-theme .dashboard .upcoming-card {
+      background: #fff !important;
+      color: var(--light-text) !important;
+      border: 1px solid #f0f1f3 !important;
+      box-shadow: 0 2px 12px rgba(60,60,60,0.04) !important;
+    }
+    body.light-theme .dashboard .welcome-card,
+    body.light-theme .dashboard .courses-card,
+    body.light-theme .dashboard .progress-card,
+    body.light-theme .dashboard .stats-card,
+    body.light-theme .dashboard .assignments-card,
+    body.light-theme .dashboard .calendar-card {
+      background: #fff !important;
+      color: var(--light-text) !important;
+      border: 1px solid #f0f1f3 !important;
+      box-shadow: 0 2px 12px rgba(60,60,60,0.04) !important;
+    }
+
+    /* Add at the end of the style block: */
+    #sidebar-toggle {
+      display: flex !important;
+      align-items: center !important;
+      margin-left: 16px !important;
+      position: static !important;
+      visibility: visible !important;
+    }
+    #sidebar-toggle button {
+      background: var(--medium-gray);
+      color: var(--text);
+      border: none;
+      padding: 10px 16px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 22px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @media (max-width: 768px) {
+      #sidebar-toggle {
+        margin-left: 0;
+      }
+    }
+
+    /* Sidebar header: clean alignment, no circle for hamburger */
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 20px 20px 20px;
+      height: 56px;
+    }
+    #sidebar-toggle {
+      display: flex;
+      align-items: center;
+      margin-left: 0;
+      position: static;
+      visibility: visible;
+    }
+    #sidebar-toggle button {
+      background: none;
+      color: var(--text);
+      border: none;
+      padding: 8px 8px;
+      border-radius: 0;
+      cursor: pointer;
+      font-size: 24px;
+      box-shadow: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo-icon {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+    }
+    .logo-text {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--text);
+    }
+    /* Collapsed sidebar: only show hamburger and nav icons */
+    body.sidebar-collapsed .sidebar-header .logo-text,
+    body.sidebar-collapsed .sidebar-header .logo-icon {
+      display: none !important;
+    }
+    body.sidebar-collapsed .sidebar-header {
+      justify-content: center;
+      padding-left: 0;
+      padding-right: 0;
+    }
+    body.sidebar-collapsed .nav-link span {
+      display: none !important;
+    }
+    body.sidebar-collapsed .nav-link {
+      justify-content: center;
+      padding: 12px 0;
+    }
+    body.sidebar-collapsed .nav-icon {
+      margin-right: 0;
+    }
+
+    /* Accent Button for Enroll Now */
+    .accent-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 12px 28px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      box-shadow: 0 2px 12px rgba(76,201,240,0.10);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+      outline: none;
+    }
+    .accent-btn:hover, .accent-btn:focus {
+      background: linear-gradient(90deg, var(--accent), var(--primary-light));
+      box-shadow: 0 4px 18px rgba(76,201,240,0.18);
+      transform: translateY(-2px) scale(1.03);
+    }
+    .accent-btn i {
+      font-size: 1.1em;
+      margin-right: 4px;
+    }
+    body.light-theme .accent-btn {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(76,201,240,0.13);
+    }
+    body.light-theme .accent-btn:hover, body.light-theme .accent-btn:focus {
+      background: linear-gradient(90deg, var(--accent), var(--primary-light));
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(76,201,240,0.22);
+    }
+
+    /* My Courses Tab Only: Soft Card Style */
+    .my-courses-card {
+      background: var(--glass);
+      border-radius: 16px;
+      padding: 28px 24px 24px 24px;
+      color: var(--text);
+      box-shadow: 0 2px 12px rgba(60,60,60,0.08);
+      border: 1px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      min-height: 200px;
+      position: relative;
+      transition: box-shadow 0.2s, transform 0.2s;
+      margin-bottom: 0;
+    }
+    .my-courses-card:hover {
+      box-shadow: 0 6px 24px 0 rgba(67,97,238,0.13);
+      transform: translateY(-2px) scale(1.01);
+    }
+    .my-courses-card .course-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: var(--light-gray);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+    }
+    .my-courses-card .course-card-instructor img {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      margin-right: 7px;
+    }
+    .my-courses-card .course-card-title {
+      font-size: 1.18rem;
+      font-weight: 700;
+      margin-bottom: 7px;
+      color: var(--text);
+    }
+    .my-courses-card .course-card-instructor {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.97rem;
+      opacity: 0.85;
+      margin-bottom: 14px;
+      color: var(--text-light);
+    }
+    .my-courses-card .course-card-progress-label {
+      font-size: 0.97rem;
+      margin-bottom: 3px;
+      opacity: 0.8;
+      color: var(--text-light);
+    }
+    .my-courses-card .course-card-progress-bar {
+      background: var(--light-gray);
+      border-radius: 6px;
+      height: 8px;
+      width: 100%;
+      margin-bottom: 7px;
+      overflow: hidden;
+    }
+    .my-courses-card .course-card-progress-fill {
+      height: 100%;
+      border-radius: 6px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 75%;
+      transition: width 1.2s cubic-bezier(.4,2,.6,1);
+    }
+    .my-courses-card .course-card-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+      opacity: 0.8;
+      margin-bottom: 10px;
+      color: var(--text-light);
+    }
+    .my-courses-card .course-card-button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 22px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+      align-self: flex-start;
+      box-shadow: 0 1px 6px rgba(76,201,240,0.08);
+    }
+    .my-courses-card .course-card-button:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+    
+    /* Course card actions container */
+    .my-courses-card .course-card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    
+    /* Course chat button */
+    .my-courses-card .course-chat-button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+    }
+    
+    .my-courses-card .course-chat-button:hover {
+      background: var(--secondary);
+      color: #fff;
+    }
+    
+    .my-courses-card .course-card-bookmark {
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      color: var(--accent);
+      font-size: 1.2rem;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .my-courses-card .course-card-bookmark.bookmarked {
+      color: var(--primary);
+      opacity: 1;
+    }
+    /* Light theme override for my courses cards */
+    body.light-theme .my-courses-card {
+      background: var(--light-card) !important;
+      color: var(--light-text) !important;
+      border: 1px solid var(--light-border);
+      box-shadow: 0 2px 12px rgba(60,60,60,0.04) !important;
+    }
+    body.light-theme .my-courses-card .course-icon {
+      background: var(--light-medium-gray);
+      color: var(--primary);
+    }
+    body.light-theme .my-courses-card .course-card-instructor,
+    body.light-theme .my-courses-card .course-card-progress-label {
+      color: var(--light-text-light) !important;
+    }
+    body.light-theme .my-courses-card .course-card-meta {
+      color: var(--light-text) !important;
+    }
+    body.light-theme .my-courses-card .course-card-progress-bar {
+      background: #e0e7ef;
+    }
+    body.light-theme .my-courses-card .course-card-button {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 1px 6px rgba(76,201,240,0.10);
+    }
+    body.light-theme .my-courses-card .course-card-button:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+    body.light-theme .my-courses-card .course-card-bookmark {
+      color: var(--accent);
+    }
+    body.light-theme .my-courses-card .course-card-bookmark.bookmarked {
+      color: var(--primary);
+    }
+
+
+    /* Topbar search dropdown */
+    .topbar-search-dropdown {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      width: 100%;
+      background: var(--light-card);
+      border: 1px solid var(--light-border);
+      border-radius: 10px;
+      box-shadow: 0 4px 24px rgba(60,60,60,0.10);
+      z-index: 2001;
+      max-height: 320px;
+      overflow-y: auto;
+      display: none;
+    }
+    .topbar-search-dropdown.active {
+      display: block;
+    }
+    .topbar-search-section {
+      padding: 10px 18px 4px 18px;
+      font-size: 0.98rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .topbar-search-result {
+      padding: 8px 18px;
+      cursor: pointer;
+      font-size: 1.05rem;
+      color: var(--light-text);
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .topbar-search-result:hover, .topbar-search-result.active {
+      background: var(--light-medium-gray);
+      color: var(--primary);
+    }
+    .topbar-search-highlight {
+      background: var(--accent);
+      color: #fff;
+      border-radius: 3px;
+      padding: 0 2px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Main container -->
+  <div class="container">
+    <!-- Sidebar navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header" style="display:flex;align-items:center;gap:16px;padding:0 20px 20px 20px;">
+        <div id="sidebar-toggle">
+          <button onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+          </button>
+        </div>
+        <div class="logo-icon">
+          <i class="fas fa-graduation-cap"></i>
+        </div>
+        <div class="logo-text">EduSync</div>
+      </div>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-home nav-icon"></i> <span>Dashboard</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-book nav-icon"></i> <span>My Courses</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-tasks nav-icon"></i> <span>Assignments</span></a></li>
+        <li class="nav-item"><a href="test.html" class="nav-link"><i class="fas fa-file-alt nav-icon"></i> <span>Tests</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-file-alt nav-icon"></i> <span>Grades</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-video nav-icon"></i> <span>Video Lectures</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-comments nav-icon"></i> <span>Discussion</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-user nav-icon"></i> <span>Profile</span></a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-cog nav-icon"></i> <span>Settings</span></a></li>
+      </ul>
+    </aside>
+    
+    <!-- Main content area -->
+    <main class="main-content">
+      <!-- Top bar with search and user controls -->
+      <div class="top-bar" style="display:flex;align-items:center;justify-content:space-between;position:relative;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="search-bar" style="position:relative;">
+            <i class="fas fa-search"></i>
+            <input id="topbar-search" type="text" placeholder="Search courses, assignments..." autocomplete="off">
+            <div id="topbar-search-dropdown" class="topbar-search-dropdown"></div>
+          </div>
+          <button id="ai-chatbot-btn" title="Ask EduSync AI" style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(67,97,238,0.08);">
+            <i class="fas fa-robot"></i> Chat
+          </button>
+        </div>
+        
+        <div class="user-controls">
+          <div class="notification-btn">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge">3</span>
+          </div>
+          
+          <div class="user-profile" id="user-profile-settings" style="cursor:pointer;">
+            <div class="user-avatar" id="topbar-avatar">JD</div>
+            <div class="user-name" id="topbar-name">John Doe</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Dashboard tab (default view) -->
+      <div class="dashboard main-tab" id="tab-dashboard">
+        <!-- Welcome Card -->
+        <div class="card welcome-card">
+          <div class="welcome-content">
+            <div class="welcome-text">
+              <h2 id="welcome-message">Welcome back, John!</h2>
+              <p>You have 2 new announcements, 3 pending assignments, and 1 upcoming test this week.</p>
+              
+              <div class="welcome-stats">
+                <div class="stat-item">
+                  <div class="stat-icon">
+                    <i class="fas fa-book-open"></i>
+                  </div>
+                  <div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Courses</div>
+                  </div>
+                </div>
+                
+                <div class="stat-item">
+                  <div class="stat-icon">
+                    <i class="fas fa-star"></i>
+                  </div>
+                  <div>
+                    <div class="stat-value">3.8</div>
+                    <div class="stat-label">GPA</div>
+                  </div>
+                </div>
+                
+                <div class="stat-item">
+                  <div class="stat-icon">
+                    <i class="fas fa-tasks"></i>
+                  </div>
+                  <div>
+                    <div class="stat-value">87%</div>
+                    <div class="stat-label">Completion</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Upcoming Card -->
+        <div class="card upcoming-card">
+          <div class="card-header">
+            <div class="card-title">Upcoming Deadlines</div>
+            <div class="card-actions">
+              <i class="fas fa-ellipsis-h card-action"></i>
+            </div>
+          </div>
+          
+          <div class="upcoming-item">
+            <div class="upcoming-icon">
+              <i class="fas fa-flask"></i>
+            </div>
+            <div class="upcoming-details">
+              <h4>Chemistry Lab Report</h4>
+              <p>Chapter 5 Experiment Analysis</p>
+            </div>
+            <div class="upcoming-time">Today</div>
+          </div>
+          
+          <div class="upcoming-item">
+            <div class="upcoming-icon">
+              <i class="fas fa-calculator"></i>
+            </div>
+            <div class="upcoming-details">
+              <h4>Math Assignment</h4>
+              <p>Linear Algebra Problems</p>
+            </div>
+            <div class="upcoming-time">Tomorrow</div>
+          </div>
+          
+          <div class="upcoming-item">
+            <div class="upcoming-icon">
+              <i class="fas fa-laptop-code"></i>
+            </div>
+            <div class="upcoming-details">
+              <h4>Programming Project</h4>
+              <p>Data Structures Implementation</p>
+            </div>
+            <div class="upcoming-time">Fri</div>
+          </div>
+        </div>
+        
+        <!-- Courses Card -->
+        <div class="card courses-card">
+          <div class="card-header">
+            <div class="card-title">Your Courses</div>
+            <div class="card-actions">
+              <i class="fas fa-plus card-action"></i>
+              <i class="fas fa-ellipsis-h card-action"></i>
+            </div>
+          </div>
+          
+          <div class="course-list">
+            <div class="course-item">
+              <div class="course-icon">
+                <i class="fas fa-laptop-code"></i>
+              </div>
+              <div class="course-name">Data Structures & Algorithms</div>
+              <div class="course-instructor">Dr. Johnson</div>
+              <div class="course-progress">
+                <div class="progress-bar" style="width: 75%;"></div>
+              </div>
+              <div class="progress-text">75% complete</div>
+            </div>
+            
+            <div class="course-item">
+              <div class="course-icon">
+                <i class="fas fa-database"></i>
+              </div>
+              <div class="course-name">Database Management</div>
+              <div class="course-instructor">Prof. Chen</div>
+              <div class="course-progress">
+                <div class="progress-bar" style="width: 60%;"></div>
+              </div>
+              <div class="progress-text">60% complete</div>
+            </div>
+            
+            <div class="course-item">
+              <div class="course-icon">
+                <i class="fas fa-code"></i>
+              </div>
+              <div class="course-name">Web Development</div>
+              <div class="course-instructor">Mr. Rodriguez</div>
+              <div class="course-progress">
+                <div class="progress-bar" style="width: 45%;"></div>
+              </div>
+              <div class="progress-text">45% complete</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Progress Card -->
+        <div class="card progress-card">
+          <div class="card-header">
+            <div class="card-title">Academic Progress</div>
+            <div class="card-actions">
+              <i class="fas fa-ellipsis-h card-action"></i>
+            </div>
+          </div>
+          
+          <div class="progress-metrics">
+            <div class="metric">
+              <div class="metric-value good">3.8</div>
+              <div class="metric-label">GPA</div>
+            </div>
+            
+            <div class="metric">
+              <div class="metric-value average">87%</div>
+              <div class="metric-label">Completion</div>
+            </div>
+            
+            <div class="metric">
+              <div class="metric-value">92%</div>
+              <div class="metric-label">Attendance</div>
+            </div>
+          </div>
+          
+          <div class="progress-chart">
+            <div class="chart-placeholder">
+              Performance Chart (would be interactive in production)
+            </div>
+          </div>
+        </div>
+        
+        <!-- Stats Card -->
+        <div class="card stats-card">
+          <div class="card-header">
+            <div class="card-title">Quick Stats</div>
+            <div class="card-actions">
+              <i class="fas fa-sync-alt card-action"></i>
+            </div>
+          </div>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-number">12</div>
+              <div class="stat-label">Assignments</div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-number">3</div>
+              <div class="stat-label">Upcoming Tests</div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-number">24</div>
+              <div class="stat-label">Video Lectures</div>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-number">8</div>
+              <div class="stat-label">Discussion Posts</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Assignments Card -->
+        <div class="card assignments-card">
+          <div class="card-header">
+            <div class="card-title">Recent Assignments</div>
+            <div class="card-actions">
+              <i class="fas fa-ellipsis-h card-action"></i>
+            </div>
+          </div>
+          
+          <div class="assignment-list">
+            <div class="assignment-item">
+              <div class="assignment-status completed"></div>
+              <div class="assignment-details">
+                <h4>Quantum Physics Problem Set</h4>
+                <p>Chapter 5 Exercises</p>
+              </div>
+              <div class="assignment-due">Submitted</div>
+            </div>
+            <div class="assignment-item">
+              <div class="assignment-status pending"></div>
+              <div class="assignment-details">
+                <h4>Machine Learning Project</h4>
+                <p>Decision Tree Implementation</p>
+              </div>
+              <div class="assignment-due">Due tomorrow</div>
+            </div>
+            <div class="assignment-item">
+              <div class="assignment-status overdue"></div>
+              <div class="assignment-details">
+                <h4>Chemistry Lab Report</h4>
+                <p>Experiment Analysis</p>
+              </div>
+              <div class="assignment-due">Overdue</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Calendar Card -->
+        <div class="card calendar-card">
+          <div class="card-header">
+            <div class="card-title">Academic Calendar</div>
+            <div class="card-actions">
+              <i class="fas fa-ellipsis-h card-action"></i>
+            </div>
+          </div>
+          
+          <div class="calendar-header">
+            <div class="calendar-month">November 2023</div>
+            <div class="calendar-nav">
+              <div class="calendar-nav-btn">
+                <i class="fas fa-chevron-left"></i>
+              </div>
+              <div class="calendar-nav-btn">
+                <i class="fas fa-chevron-right"></i>
+              </div>
+            </div>
+          </div>
+          
+          <div class="calendar-weekdays">
+            <div>Sun</div>
+            <div>Mon</div>
+            <div>Tue</div>
+            <div>Wed</div>
+            <div>Thu</div>
+            <div>Fri</div>
+            <div>Sat</div>
+          </div>
+          
+          <div class="calendar-days">
+            <div class="calendar-day other-month">29</div>
+            <div class="calendar-day other-month">30</div>
+            <div class="calendar-day other-month">31</div>
+            <div class="calendar-day">1</div>
+            <div class="calendar-day">2</div>
+            <div class="calendar-day">3</div>
+            <div class="calendar-day">4</div>
+            <div class="calendar-day">5</div>
+            <div class="calendar-day">6</div>
+            <div class="calendar-day">7</div>
+            <div class="calendar-day">8</div>
+            <div class="calendar-day">9</div>
+            <div class="calendar-day">10</div>
+            <div class="calendar-day">11</div>
+            <div class="calendar-day">12</div>
+            <div class="calendar-day event">13</div>
+            <div class="calendar-day event">14</div>
+            <div class="calendar-day">15</div>
+            <div class="calendar-day today">16</div>
+            <div class="calendar-day">17</div>
+            <div class="calendar-day">18</div>
+            <div class="calendar-day">19</div>
+            <div class="calendar-day">20</div>
+            <div class="calendar-day">21</div>
+            <div class="calendar-day event">22</div>
+            <div class="calendar-day">23</div>
+            <div class="calendar-day">24</div>
+            <div class="calendar-day">25</div>
+            <div class="calendar-day">26</div>
+            <div class="calendar-day">27</div>
+            <div class="calendar-day">28</div>
+            <div class="calendar-day">29</div>
+            <div class="calendar-day">30</div>
+            <div class="calendar-day other-month">1</div>
+            <div class="calendar-day other-month">2</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- My Courses Tab -->
+      <div class="courses-view main-tab" id="tab-courses">
+        <div class="section-header">
+          <h1 class="section-title">My Courses</h1>
+          <button class="course-enroll-button accent-btn" onclick="openModal('enroll-modal')">
+            <i class="fas fa-plus"></i> Enroll in Course
+          </button>
+        </div>
+        
+        <div class="course-grid">
+          <!-- Course Card 1 -->
+          <div class="my-courses-card">
+            <div class="course-card-title">Data Structures & Algorithms</div>
+            <div class="course-card-instructor">
+              <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Instructor">
+              <span>Dr. Johnson</span>
+            </div>
+            <div class="course-card-progress-label">Progress</div>
+            <div class="course-card-progress-bar">
+              <div class="course-card-progress-fill" style="width:75%"></div>
+            </div>
+            <div class="course-card-meta">
+              <span>12/16 modules completed</span>
+              <span>Next: Sorting Algorithms</span>
+            </div>
+            <div class="course-card-actions">
+              <button class="course-card-button">Continue Learning</button>
+              <button class="course-chat-button" onclick="openCourseChat('Data Structures & Algorithms', 'Dr. Johnson')">
+                <i class="fas fa-comments"></i> Chat
+              </button>
+            </div>
+            <i class="fas fa-bookmark course-card-bookmark"></i>
+          </div>
+          
+          <!-- Course Card 2 -->
+          <div class="my-courses-card">
+            <div class="course-card-title">Database Management Systems</div>
+            <div class="course-card-instructor">
+              <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Instructor">
+              <span>Prof. Chen</span>
+            </div>
+            <div class="course-card-progress-label">Progress</div>
+            <div class="course-card-progress-bar">
+              <div class="course-card-progress-fill" style="width:60%"></div>
+            </div>
+            <div class="course-card-meta">
+              <span>9/15 modules completed</span>
+              <span>Next: SQL Joins</span>
+            </div>
+            <div class="course-card-actions">
+              <button class="course-card-button">Continue Learning</button>
+              <button class="course-chat-button" onclick="openCourseChat('Database Management Systems', 'Prof. Chen')">
+                <i class="fas fa-comments"></i> Chat
+              </button>
+            </div>
+            <i class="fas fa-bookmark course-card-bookmark"></i>
+          </div>
+          
+          <!-- Course Card 3 -->
+          <div class="my-courses-card">
+            <div class="course-card-title">Web Development</div>
+            <div class="course-card-instructor">
+              <img src="https://randomuser.me/api/portraits/men/52.jpg" alt="Instructor">
+              <span>Mr. Rodriguez</span>
+            </div>
+            <div class="course-card-progress-label">Progress</div>
+            <div class="course-card-progress-bar">
+              <div class="course-card-progress-fill" style="width:45%"></div>
+            </div>
+            <div class="course-card-meta">
+              <span>7/16 modules completed</span>
+              <span>Next: React Components</span>
+            </div>
+            <div class="course-card-actions">
+              <button class="course-card-button">Continue Learning</button>
+              <button class="course-chat-button" onclick="openCourseChat('Web Development', 'Mr. Rodriguez')">
+                <i class="fas fa-comments"></i> Chat
+              </button>
+            </div>
+            <i class="fas fa-bookmark course-card-bookmark"></i>
+          </div>
+        </div>
+        
+        <div class="courses-stats">
+          <div class="stat-box">
+            <div class="stat-box-value courses">3</div>
+            Active Courses
+          </div>
+          <div class="stat-box">
+            <div class="stat-box-value hours">360</div>
+            Hours Studied
+          </div>
+          <div class="stat-box">
+            <div class="stat-box-value modules">28</div>
+            Modules Completed
+          </div>
+        </div>
+      </div>
+      
+      <!-- Assignments Tab -->
+      <div class="assignments-view main-tab" id="tab-assignments">
+        <div class="section-header">
+          <h1 class="section-title">Assignments</h1>
+          <div class="assignment-filters">
+            <button class="filter-button active">All Courses</button>
+            <button class="filter-button">All Status</button>
+          </div>
+        </div>
+        
+        <div class="assignment-list">
+          <!-- Assignment Cards will be rendered by JS -->
+        </div>
+        
+        <div class="assignment-stats">
+          <div class="assignment-stat-box">
+            <div class="assignment-stat-value overdue">1</div>
+            Overdue
+          </div>
+          <div class="assignment-stat-box">
+            <div class="assignment-stat-value pending">1</div>
+            Due This Week
+          </div>
+          <div class="assignment-stat-box">
+            <div class="assignment-stat-value completed">1</div>
+            Completed
+          </div>
+          <div class="assignment-stat-box">
+            <div class="assignment-stat-value average">89%</div>
+            Average Grade
+          </div>
+        </div>
+      </div>
+      
+      <!-- Grades Tab -->
+      <div class="grades-view main-tab" id="tab-grades">
+        <div class="grades-header">
+          <h1 class="section-title">Grades & Performance</h1>
+          <div class="grades-filters">
+            <select class="filter-button">
+              <option>Current Semester</option>
+              <option>Fall 2023</option>
+              <option>Spring 2023</option>
+            </select>
+            <button class="filter-button" onclick="exportGrades()">
+              <i class="fas fa-download"></i> Export Report
+            </button>
+          </div>
+        </div>
+        
+        <div class="grades-stats">
+          <div class="grade-stat-box">
+            <div class="grade-stat-value current">3.7</div>
+            <div class="grade-stat-label">Current GPA</div>
+          </div>
+          <div class="grade-stat-box">
+            <div class="grade-stat-value cumulative">3.8</div>
+            <div class="grade-stat-label">Cumulative GPA</div>
+          </div>
+          <div class="grade-stat-box">
+            <div class="grade-stat-value credits">9</div>
+            <div class="grade-stat-label">Total Credits</div>
+          </div>
+          <div class="grade-stat-box">
+            <div class="grade-stat-value courses">3</div>
+            <div class="grade-stat-label">Courses</div>
+          </div>
+        </div>
+        
+        <div class="grades-table-container">
+          <div class="grades-table-title">Course Grades</div>
+          <table class="grades-table">
+            <thead>
+              <tr>
+                <th>Course</th>
+                <th>Instructor</th>
+                <th>Credits</th>
+                <th>Current Grade</th>
+                <th>Progress</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr onclick="openModal('grade-details-modal')">
+                <td>
+                  <div class="course-cell">
+                    <span class="course-icon-small">DS</span>
+                    <div>
+                      <div class="course-name">Data Structures & Algorithms</div>
+                      <div class="course-code">CSC 301</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Dr. Johnson</td>
+                <td>3</td>
+                <td><span class="grade-badge">A</span></td>
+                <td>
+                  <div class="grade-progress">
+                    <div class="grade-progress-bar">
+                      <div class="grade-progress-fill" style="width:75%"></div>
+                    </div>
+                    <span>75%</span>
+                  </div>
+                </td>
+                <td><a href="#" class="grade-details-link">View Details</a></td>
+              </tr>
+              <tr onclick="openModal('grade-details-modal')">
+                <td>
+                  <div class="course-cell">
+                    <span class="course-icon-small">DB</span>
+                    <div>
+                      <div class="course-name">Database Management Systems</div>
+                      <div class="course-code">CSC 315</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Prof. Chen</td>
+                <td>3</td>
+                <td><span class="grade-badge b-plus">B+</span></td>
+                <td>
+                  <div class="grade-progress">
+                    <div class="grade-progress-bar">
+                      <div class="grade-progress-fill" style="width:60%"></div>
+                    </div>
+                    <span>60%</span>
+                  </div>
+                </td>
+                <td><a href="#" class="grade-details-link">View Details</a></td>
+              </tr>
+              <tr onclick="openModal('grade-details-modal')">
+                <td>
+                  <div class="course-cell">
+                    <span class="course-icon-small">WD</span>
+                    <div>
+                      <div class="course-name">Web Development</div>
+                      <div class="course-code">CSC 350</div>
+                    </div>
+                  </div>
+                </td>
+                <td>Mr. Rodriguez</td>
+                <td>3</td>
+                <td><span class="grade-badge">A</span></td>
+                <td>
+                  <div class="grade-progress">
+                    <div class="grade-progress-bar">
+                      <div class="grade-progress-fill" style="width:45%"></div>
+                    </div>
+                    <span>45%</span>
+                  </div>
+                </td>
+                <td><a href="#" class="grade-details-link">View Details</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="grades-chart-container">
+          <div class="grades-chart-title">
+            <i class="fas fa-chart-line"></i> Grade Trends
+          </div>
+          <div class="grades-chart-placeholder">
+            (Grade chart would appear here)
+          </div>
+        </div>
+      </div>
+      
+      <!-- Profile Tab -->
+      <div class="profile-view main-tab" id="tab-profile">
+        <h1 class="section-title">Student Profile</h1>
+        
+        <div class="profile-container">
+          <!-- Profile Card -->
+          <div class="profile-card">
+            <div class="profile-avatar" id="profile-avatar">JD</div>
+            <div class="profile-name" id="profile-name">John Smith</div>
+            <div class="profile-major" id="profile-major">Computer Science</div>
+            <div class="profile-class" id="profile-class">Class of 2025</div>
+            <button class="profile-edit-button" onclick="openModal('profile-edit-modal')">
+              Edit Profile
+            </button>
+          </div>
+          
+          <!-- Personal Info -->
+          <div class="profile-info">
+            <div class="profile-info-title">Personal Information</div>
+            <div class="profile-info-grid">
+              <div class="profile-info-field">
+                <label>Full Name</label>
+                <input id="profile-fullname" type="text" value="John Smith" readonly>
+              </div>
+              <div class="profile-info-field">
+                <label>Student ID</label>
+                <input id="profile-id" type="text" value="CS2025001" readonly>
+              </div>
+              <div class="profile-info-field">
+                <label>Email</label>
+                <input id="profile-email" type="email" value="john.smith@university.edu" readonly>
+              </div>
+              <div class="profile-info-field">
+                <label>Phone</label>
+                <input id="profile-phone" type="text" value="+1 (555) 123-4567" readonly>
+              </div>
+              <div class="profile-info-field">
+                <label>Major</label>
+                <input id="profile-major-field" type="text" value="Computer Science" readonly>
+              </div>
+              <div class="profile-info-field">
+                <label>Class Year</label>
+                <input id="profile-classyear" type="text" value="2025" readonly>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Settings Tab -->
+      <div class="settings-view main-tab" id="tab-settings">
+        <h1 class="section-title">Settings</h1>
+        
+        <!-- Appearance Settings -->
+        <div class="settings-card">
+          <div class="settings-card-title">
+            <i class="fas fa-palette"></i> Appearance
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-content">
+              <h4>Dark Mode</h4>
+              <p>Toggle between light and dark theme</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="settings-darkmode">
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-content">
+              <h4>Theme</h4>
+              <p>Choose your preferred theme</p>
+            </div>
+            <select class="settings-select" id="settings-theme">
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
+            </select>
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-content">
+              <h4>Accent Color</h4>
+              <p>Personalize your accent color</p>
+            </div>
+            <div class="accent-picker" id="settings-accents">
+              <button class="accent-swatch selected" data-color="#4cc9f0" style="background:#4cc9f0"></button>
+              <button class="accent-swatch" data-color="#f72585" style="background:#f72585"></button>
+              <button class="accent-swatch" data-color="#ff9800" style="background:#ff9800"></button>
+              <button class="accent-swatch" data-color="#43e97b" style="background:#43e97b"></button>
+              <button class="accent-swatch" data-color="#7c3aed" style="background:#7c3aed"></button>
+              <button class="accent-swatch" data-color="#ff6f61" style="background:#ff6f61"></button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Notification Settings -->
+        <div class="settings-card">
+          <div class="settings-card-title">
+            <i class="fas fa-bell"></i> Notifications
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-content">
+              <h4>Assignment Reminders</h4>
+              <p>Get notified about upcoming assignment deadlines</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="notif-assignments">
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-content">
+              <h4>Grade Notifications</h4>
+              <p>Receive notifications when grades are posted</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="notif-grades">
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-content">
+              <h4>Message Alerts</h4>
+              <p>Get notified about new messages from instructors</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="notif-messages">
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-content">
+              <h4>Course Updates</h4>
+              <p>Notifications for course announcements and changes</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="notif-courses">
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="settings-item">
+            <div class="settings-item-content">
+              <h4>Discussion Replies</h4>
+              <p>Get notified when someone replies to your posts</p>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="notif-discussions">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Video Lectures Tab -->
+      <div class="video-lectures-view main-tab" id="tab-videos">
+        <h1 class="section-title">Video Lectures</h1>
+        
+        <!-- Featured Video -->
+        <div class="featured-video">
+          <iframe class="video-player" id="video-player" src="https://www.youtube.com/embed/2Ji-clqUYnA" title="Featured Lecture" frameborder="0" allowfullscreen></iframe>
+          <div class="video-info">
+            <div class="video-title" id="video-title">Introduction to React</div>
+            <div class="video-meta" id="video-instructor">Dr. Johnson • 42:18</div>
+            <div class="video-tags" id="video-tags">
+              <span class="video-tag">React</span>
+              <span class="video-tag">Frontend</span>
+            </div>
+            <div class="video-description" id="video-desc">Learn the basics of React, component structure, and state management in this comprehensive introduction.</div>
+          </div>
+        </div>
+        
+        <!-- Search and Filter -->
+        <div class="video-controls">
+          <input class="video-search" id="video-search" type="text" placeholder="Search lectures...">
+          <select class="video-filter" id="video-filter">
+            <option value="all">All Topics</option>
+            <option value="React">React</option>
+            <option value="Python">Python</option>
+            <option value="Databases">Databases</option>
+            <option value="AI">AI</option>
+          </select>
+        </div>
+        
+        <!-- Video List -->
+        <div class="video-list" id="video-list">
+          <!-- Videos will be rendered here by JavaScript -->
+        </div>
+      </div>
+      
+      <!-- Discussion Tab -->
+      <div class="discussions-view main-tab" id="tab-discussion">
+        <h1 class="section-title">Community Discussions</h1>
+        
+        <!-- New Thread Form -->
+        <div class="new-thread-form">
+          <form class="thread-form" id="discussion-form">
+            <div class="thread-form-field">
+              <label>Title</label>
+              <input id="discussion-title" type="text" required placeholder="Start a new topic...">
+            </div>
+            <div class="thread-form-field">
+              <label>Tags</label>
+              <input id="discussion-tags" type="text" placeholder="e.g. Project, Help">
+            </div>
+            <div class="thread-form-submit">
+              <button type="submit">Post</button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Thread List -->
+        <div class="thread-list" id="discussion-list">
+          <!-- Threads will be rendered here by JavaScript -->
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- ========== MODALS ========== -->
+  <!-- Profile Edit Modal -->
+  <div class="modal" id="profile-edit-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('profile-edit-modal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="modal-title">Edit Profile</div>
+      
+      <form class="profile-edit-form">
+        <div class="profile-edit-field">
+          <label>Full Name</label>
+          <input id="edit-fullname" type="text">
+        </div>
+        <div class="profile-edit-field">
+          <label>Student ID</label>
+          <input id="edit-id" type="text">
+        </div>
+        <div class="profile-edit-field">
+          <label>Email</label>
+          <input id="edit-email" type="email">
+        </div>
+        <div class="profile-edit-field">
+          <label>Phone</label>
+          <input id="edit-phone" type="text">
+        </div>
+        <div class="profile-edit-field">
+          <label>Major</label>
+          <input id="edit-major" type="text">
+        </div>
+        <div class="profile-edit-field">
+          <label>Class Year</label>
+          <input id="edit-classyear" type="text">
+        </div>
+        <div class="profile-edit-submit">
+          <button type="button" onclick="saveProfileEdit()">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Assignment Modal -->
+  <div class="modal" id="assignment-modal">
+    <div class="modal-content assignment-modal-content">
+      <button class="modal-close" onclick="closeModal('assignment-modal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="modal-title" id="assignment-modal-title">Assignment</div>
+      <div class="assignment-modal-description">
+        Assignment details and upload form will appear here.
+        <br><br>
+        <b>Upload your solution:</b>
+      </div>
+      <input class="assignment-modal-upload" type="file">
+      <button class="assignment-modal-submit">Submit</button>
+    </div>
+  </div>
+  
+  <!-- Course Modal -->
+  <div class="modal" id="course-modal">
+    <div class="modal-content course-modal-content">
+      <button class="modal-close" onclick="closeModal('course-modal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="modal-title" id="course-modal-title">Course</div>
+      <p>Course details, resources, and progress will appear here.</p>
+    </div>
+  </div>
+  
+  <!-- Grade Details Modal -->
+  <div class="modal" id="grade-details-modal">
+    <div class="modal-content grade-details-content">
+      <button class="modal-close" onclick="closeModal('grade-details-modal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="modal-title" id="grade-details-title">Course - Details</div>
+      <div id="grade-details-content">
+        More detailed grade breakdown for this course will appear here.
+        <ul>
+          <li>Assignment 1: 95%</li>
+          <li>Assignment 2: 88%</li>
+          <li>Midterm: 90%</li>
+          <li>Final: 92%</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Enroll Modal -->
+  <div class="modal" id="enroll-modal">
+    <div class="modal-content enroll-modal-content">
+      <button class="modal-close" onclick="closeModal('enroll-modal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="modal-title">Enroll in a New Course</div>
+      
+      <div class="enroll-field">
+        <input id="enroll-course-name" type="text" placeholder="Course Name">
+      </div>
+      <div class="enroll-field">
+        <input id="enroll-instructor" type="text" placeholder="Instructor">
+      </div>
+      <button class="enroll-submit" onclick="enrollCourse()">Enroll</button>
+    </div>
+  </div>
+
+  <!-- Course Chat Modal -->
+  <div class="modal" id="course-chat-modal">
+    <div class="modal-content course-chat-modal-content">
+      <button class="modal-close" onclick="closeModal('course-chat-modal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="course-chat-header">
+        <div class="course-chat-title">
+          <i class="fas fa-comments"></i>
+          <span id="course-chat-course-name">Course Chat</span>
+        </div>
+        <div class="course-chat-instructor">
+          <img id="course-chat-instructor-avatar" src="" alt="Instructor">
+          <span id="course-chat-instructor-name">Instructor</span>
+        </div>
+      </div>
+      
+      <div class="course-chat-messages" id="course-chat-messages">
+        <!-- Messages will be loaded here -->
+      </div>
+      
+      <div class="course-chat-input-container">
+        <input type="text" id="course-chat-input" placeholder="Type your message..." maxlength="500">
+        <button id="course-chat-send" onclick="sendCourseMessage()">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Settings Modal -->
+  <div class="modal" id="profile-settings-modal">
+    <div class="modal-content" style="min-width:340px;max-width:95vw;">
+      <button class="modal-close" onclick="closeModal('profile-settings-modal')">
+        <i class="fas fa-times"></i>
+      </button>
+      <div class="modal-title">Edit Profile</div>
+      <form id="profile-settings-form" style="display:flex;flex-direction:column;align-items:center;gap:18px;">
+        <label style="cursor:pointer;">
+          <input type="file" id="avatar-upload" accept="image/*" style="display:none;">
+          <div id="avatar-preview" style="width:80px;height:80px;border-radius:50%;background:#eee;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;overflow:hidden;margin-bottom:8px;"></div>
+          <span style="font-size:0.95rem;color:#888;">Change Avatar</span>
+        </label>
+        <button type="button" id="remove-avatar-btn" style="background:#eee;color:#d32f2f;border:none;padding:7px 18px;border-radius:7px;font-weight:600;font-size:0.98rem;cursor:pointer;margin-bottom:8px;">Remove Avatar</button>
+        <input id="profile-settings-name" type="text" placeholder="Your Name" style="padding:10px 12px;border-radius:7px;border:none;background:#f0f0f0;font-size:1rem;font-weight:500;width:100%;max-width:220px;">
+        <button type="submit" style="background:var(--primary);color:white;border:none;padding:10px 24px;border-radius:8px;font-weight:600;font-size:1rem;cursor:pointer;width:100%;max-width:220px;">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tests Tab -->
+  <div class="main-tab" id="tab-tests" style="display:none;">
+    <h1 class="section-title">MCQ Test</h1>
+    <div id="test-container" style="padding: 24px; background: var(--dark-gray); border-radius: 12px; color: var(--text); margin-top: 20px;">
+      <!-- Test content will be rendered here by JS -->
+    </div>
+    <div id="test-report" style="display:none; margin-top:24px;"></div>
+  </div>
+
+  <!-- Move the entire <script> block to here, just before </body> -->
+  <script>
+    // ========== GLOBAL VARIABLES ==========
+    const videoLectures = [
+      {title:'Introduction to React', instructor:'Dr. Johnson', duration:'42:18', tags:['React','Frontend'], 
+       desc:'Learn the basics of React, component structure, and state management in this comprehensive introduction.', 
+       thumb:'https://img.youtube.com/vi/2Ji-clqUYnA/mqdefault.jpg', url:'https://www.youtube.com/embed/2Ji-clqUYnA'},
+      
+      {title:'Python for Beginners', instructor:'Prof. Chen', duration:'55:10', tags:['Python'], 
+       desc:'Start your Python journey with this beginner-friendly lecture covering syntax, variables, and loops.', 
+       thumb:'https://img.youtube.com/vi/_uQrJ0TkZlc/mqdefault.jpg', url:'https://www.youtube.com/embed/_uQrJ0TkZlc'},
+      
+      {title:'Database Design Essentials', instructor:'Mr. Rodriguez', duration:'36:44', tags:['Databases'], 
+       desc:'Understand relational databases, normalization, and schema design.', 
+       thumb:'https://img.youtube.com/vi/h0nxCDiD-zg/mqdefault.jpg', url:'https://www.youtube.com/embed/h0nxCDiD-zg'},
+      
+      {title:'AI Fundamentals', instructor:'Dr. Smith', duration:'48:22', tags:['AI'], 
+       desc:'Explore the basics of artificial intelligence, machine learning, and neural networks.', 
+       thumb:'https://img.youtube.com/vi/aircAruvnKk/mqdefault.jpg', url:'https://www.youtube.com/embed/aircAruvnKk'},
+      
+      {title:'Advanced React Patterns', instructor:'Dr. Johnson', duration:'39:05', tags:['React','Frontend'], 
+       desc:'Dive deeper into React with hooks, context, and advanced component patterns.', 
+       thumb:'https://img.youtube.com/vi/kK_Wqx3RnHk/mqdefault.jpg', url:'https://www.youtube.com/embed/kK_Wqx3RnHk'},
+      
+      {title:'SQL Joins Explained', instructor:'Prof. Chen', duration:'29:18', tags:['Databases'], 
+       desc:'Master SQL joins with clear examples and practical exercises.', 
+       thumb:'https://img.youtube.com/vi/9Pzj7Aj25lw/mqdefault.jpg', url:'https://www.youtube.com/embed/9Pzj7Aj25lw'}
+    ];
+    
+    let discussions = JSON.parse(localStorage.getItem('discussions') || '[]');
+    
+    // Seed with example discussions if empty
+    if (discussions.length === 0) {
+      discussions = [
+        {title:'How to start the group project?', author:'Alice', tags:['Project','Help'], 
+         replies:[{author:'Bob',content:'Let\'s meet on Friday!'}], lastActivity:'Today'},
+        
+        {title:'Share your favorite resources', author:'Priya', tags:['Resources'], 
+         replies:[{author:'John',content:'Check out freecodecamp.org!'}], lastActivity:'Yesterday'}
+      ];
+      localStorage.setItem('discussions', JSON.stringify(discussions));
+    }
+    
+    // ========== UTILITY FUNCTIONS ==========
+
+    
+    /**
+     * Toggle sidebar visibility (mobile) or width (desktop)
+     */
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const body = document.body;
+      
+      if (window.innerWidth <= 768) {
+        // On mobile, toggle open class
+        sidebar.classList.toggle('open');
+      } else {
+        // On desktop, toggle collapsed state
+        body.classList.toggle('sidebar-collapsed');
+      }
+    }
+    
+    /**
+     * Open a modal by ID
+     * @param {string} id - The ID of the modal to open
+     */
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+    }
+    
+    /**
+     * Close a modal by ID
+     * @param {string} id - The ID of the modal to close
+     */
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+    
+    // ========== PROFILE FUNCTIONS ==========
+
+    
+    /**
+     * Save profile edits to localStorage and update UI
+     */
+    function saveProfileEdit() {
+      localStorage.setItem('profile-fullname', document.getElementById('edit-fullname').value);
+      localStorage.setItem('profile-id', document.getElementById('edit-id').value);
+      localStorage.setItem('profile-email', document.getElementById('edit-email').value);
+      localStorage.setItem('profile-phone', document.getElementById('edit-phone').value);
+      localStorage.setItem('profile-major', document.getElementById('edit-major').value);
+      localStorage.setItem('profile-classyear', document.getElementById('edit-classyear').value);
+      
+      closeModal('profile-edit-modal');
+      loadProfile();
+      // Update welcome message
+      var welcome = document.getElementById('welcome-message');
+      if (welcome) welcome.textContent = 'Welcome back, ' + (localStorage.getItem('profile-fullname') || 'John Smith') + '!';
+    }
+    
+    /**
+     * Load profile data from localStorage and update UI
+     */
+    function loadProfile() {
+      // Update form fields
+      document.getElementById('profile-fullname').value = localStorage.getItem('profile-fullname') || 'John Smith';
+      document.getElementById('profile-id').value = localStorage.getItem('profile-id') || 'CS2025001';
+      document.getElementById('profile-email').value = localStorage.getItem('profile-email') || 'john.smith@university.edu';
+      document.getElementById('profile-phone').value = localStorage.getItem('profile-phone') || '+1 (555) 123-4567';
+      document.getElementById('profile-major-field').value = localStorage.getItem('profile-major') || 'Computer Science';
+      document.getElementById('profile-classyear').value = localStorage.getItem('profile-classyear') || '2025';
+      
+      // Update profile card
+      document.getElementById('profile-name').textContent = localStorage.getItem('profile-fullname') || 'John Smith';
+      document.getElementById('profile-major').textContent = localStorage.getItem('profile-major') || 'Computer Science';
+      document.getElementById('profile-class').textContent = 'Class of ' + (localStorage.getItem('profile-classyear') || '2025');
+      
+      // Update avatar initials
+      const name = (localStorage.getItem('profile-fullname') || 'John Smith').trim().split(' ');
+      let initials = name.length > 1 ? name[0][0] + name[name.length-1][0] : name[0][0];
+      document.getElementById('profile-avatar').textContent = initials.toUpperCase();
+      
+      // Update top bar name and avatar
+      const nameElem = document.querySelector('.user-name');
+      if (nameElem) nameElem.textContent = localStorage.getItem('profile-fullname') || 'John Smith';
+      const avatarElem = document.querySelector('.user-avatar');
+      if (avatarElem) avatarElem.textContent = initials.toUpperCase();
+      // Update welcome message
+      var welcome = document.getElementById('welcome-message');
+      if (welcome) welcome.textContent = 'Welcome back, ' + (localStorage.getItem('profile-fullname') || 'John Smith') + '!';
+    }
+    
+    // ========== COURSES FUNCTIONS ==========
+    /**
+     * Handle course enrollment form submission
+     */
+    function enrollCourse() {
+      const name = document.getElementById('enroll-course-name').value.trim();
+      const instructor = document.getElementById('enroll-instructor').value.trim();
+      
+      if (!name || !instructor) {
+        alert('Please enter both course name and instructor.');
+        return;
+      }
+      
+      // In a real app, this would make an API call to enroll
+      alert(`Successfully enrolled in: ${name}\nInstructor: ${instructor}`);
+      closeModal('enroll-modal');
+      
+      // Reset form
+      document.getElementById('enroll-course-name').value = '';
+      document.getElementById('enroll-instructor').value = '';
+    }
+    
+    // ========== ASSIGNMENTS FUNCTIONS ==========
+
+    
+    // ========== GRADES FUNCTIONS ==========
+
+    
+    // ========== VIDEO LECTURES FUNCTIONS ==========
+    /**
+     * Render the video list based on search and filter
+     */
+    function renderVideoList() {
+      const search = document.getElementById('video-search').value.toLowerCase();
+      const filter = document.getElementById('video-filter').value;
+      const list = document.getElementById('video-list');
+      
+      list.innerHTML = '';
+      
+      // Filter videos
+      let filtered = videoLectures.filter(v =>
+        (filter === 'all' || v.tags.includes(filter)) &&
+        (v.title.toLowerCase().includes(search) || 
+         v.instructor.toLowerCase().includes(search) || 
+         v.tags.join(' ').toLowerCase().includes(search))
+      );
+      
+      // Create video cards
+      filtered.forEach((v, i) => {
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        card.innerHTML = `
+          <img class="video-thumb" src="${v.thumb}" alt="${v.title}">
+          <div class="video-card-content">
+            <div class="video-card-title">${v.title}</div>
+            <div class="video-card-instructor">${v.instructor}</div>
+            <div class="video-card-tags">${v.tags.map(t => `<span class="video-card-tag">${t}</span>`).join('')}</div>
+            <div class="video-card-duration">${v.duration}</div>
+          </div>
+        `;
+        // Use the index from the original videoLectures array
+        const origIdx = videoLectures.indexOf(v);
+        card.onclick = () => setFeaturedVideo(origIdx);
+        list.appendChild(card);
+      });
+    }
+    
+    /**
+     * Set the featured video in the player
+     * @param {number} idx - Index of the video in the videoLectures array
+     */
+    function setFeaturedVideo(idx) {
+      const v = videoLectures[idx];
+      document.getElementById('video-player').src = v.url;
+      document.getElementById('video-title').textContent = v.title;
+      document.getElementById('video-instructor').textContent = `${v.instructor} • ${v.duration}`;
+      
+      // Update tags
+      const tagsContainer = document.getElementById('video-tags');
+      tagsContainer.innerHTML = v.tags.map(t => 
+        `<span class="video-tag">${t}</span>`
+      ).join('');
+      
+      document.getElementById('video-desc').textContent = v.desc;
+    }
+    
+    // ========== DISCUSSION FUNCTIONS ==========
+    /**
+     * Render the discussion thread list
+     */
+    function renderDiscussionList() {
+      const list = document.getElementById('discussion-list');
+      list.innerHTML = '';
+      
+      discussions.forEach((d, idx) => {
+        const card = document.createElement('div');
+        card.className = 'thread-card';
+        
+        // Check if current user is the author of the thread
+        const isThreadAuthor = d.author === 'You';
+        
+        card.innerHTML = `
+          <div class="thread-header">
+            <div class="thread-title">${d.title}</div>
+            ${isThreadAuthor ? `
+              <div class="thread-actions">
+                <button class="thread-action-btn edit-btn" onclick="editThread(${idx})" title="Edit">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="thread-action-btn delete-btn" onclick="deleteThread(${idx})" title="Delete">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            ` : ''}
+          </div>
+          <div class="thread-meta">
+            <span>By ${d.author}</span>
+            <span class="thread-replies">${d.replies.length} replies</span>
+            <span class="thread-last-activity">Last: ${d.lastActivity}</span>
+          </div>
+          <div class="thread-tags">${d.tags.map(t => `<span class="thread-tag">${t}</span>`).join('')}</div>
+          <div class="thread-reply-list">
+            ${d.replies.map((r, replyIdx) => `
+              <div class="thread-reply">
+                <div class="thread-reply-content-wrapper">
+                  <span class="thread-reply-author">${r.author}:</span>
+                  <span class="thread-reply-content">${r.content}</span>
+                </div>
+                ${r.author === 'You' ? `
+                  <div class="thread-reply-actions">
+                    <button class="thread-reply-action-btn edit-btn" onclick="editReply(${idx}, ${replyIdx})" title="Edit">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="thread-reply-action-btn delete-btn" onclick="deleteReply(${idx}, ${replyIdx})" title="Delete">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                ` : ''}
+              </div>
+            `).join('')}
+          </div>
+          <form class="thread-reply-form" onsubmit="event.preventDefault(); addReply(${idx}, this);">
+            <input class="thread-reply-input" type="text" placeholder="Write a reply..." required>
+            <button class="thread-reply-button" type="submit">Reply</button>
+          </form>
+        `;
+        list.appendChild(card);
+      });
+    }
+    
+    /**
+     * Add a reply to a discussion thread
+     * @param {number} idx - Index of the thread in the discussions array
+     * @param {HTMLElement} form - The form element that triggered the reply
+     */
+    function addReply(idx, form) {
+      const input = form.querySelector('input');
+      const content = input.value.trim();
+      
+      if (!content) return;
+      
+      // Add reply to thread
+      discussions[idx].replies.push({
+        author: 'You',
+        content
+      });
+      
+      // Update last activity
+      discussions[idx].lastActivity = new Date().toLocaleString();
+      
+      // Save to localStorage
+      localStorage.setItem('discussions', JSON.stringify(discussions));
+      
+      // Refresh the list
+      renderDiscussionList();
+      
+      // Clear input
+      input.value = '';
+    }
+
+    /**
+     * Edit a discussion thread
+     * @param {number} idx - Index of the thread in the discussions array
+     */
+    function editThread(idx) {
+      const thread = discussions[idx];
+      const newTitle = prompt('Edit thread title:', thread.title);
+      
+      if (newTitle && newTitle.trim() && newTitle.trim() !== thread.title) {
+        thread.title = newTitle.trim();
+        thread.lastActivity = new Date().toLocaleString();
+        
+        // Save to localStorage
+        localStorage.setItem('discussions', JSON.stringify(discussions));
+        
+        // Refresh the list
+        renderDiscussionList();
+      }
+    }
+
+    /**
+     * Delete a discussion thread
+     * @param {number} idx - Index of the thread in the discussions array
+     */
+    function deleteThread(idx) {
+      const thread = discussions[idx];
+      if (confirm(`Are you sure you want to delete the thread "${thread.title}"?`)) {
+        discussions.splice(idx, 1);
+        
+        // Save to localStorage
+        localStorage.setItem('discussions', JSON.stringify(discussions));
+        
+        // Refresh the list
+        renderDiscussionList();
+      }
+    }
+
+    /**
+     * Edit a reply in a discussion thread
+     * @param {number} threadIdx - Index of the thread in the discussions array
+     * @param {number} replyIdx - Index of the reply in the thread's replies array
+     */
+    function editReply(threadIdx, replyIdx) {
+      const reply = discussions[threadIdx].replies[replyIdx];
+      const newContent = prompt('Edit your reply:', reply.content);
+      
+      if (newContent && newContent.trim() && newContent.trim() !== reply.content) {
+        reply.content = newContent.trim();
+        discussions[threadIdx].lastActivity = new Date().toLocaleString();
+        
+        // Save to localStorage
+        localStorage.setItem('discussions', JSON.stringify(discussions));
+        
+        // Refresh the list
+        renderDiscussionList();
+      }
+    }
+
+    /**
+     * Delete a reply from a discussion thread
+     * @param {number} threadIdx - Index of the thread in the discussions array
+     * @param {number} replyIdx - Index of the reply in the thread's replies array
+     */
+    function deleteReply(threadIdx, replyIdx) {
+      const reply = discussions[threadIdx].replies[replyIdx];
+      if (confirm(`Are you sure you want to delete your reply: "${reply.content.substring(0, 50)}${reply.content.length > 50 ? '...' : ''}"?`)) {
+        discussions[threadIdx].replies.splice(replyIdx, 1);
+        discussions[threadIdx].lastActivity = new Date().toLocaleString();
+        
+        // Save to localStorage
+        localStorage.setItem('discussions', JSON.stringify(discussions));
+        
+        // Refresh the list
+        renderDiscussionList();
+      }
+    }
+    
+    // ========== SETTINGS FUNCTIONS ==========
+    /**
+     * Load settings from localStorage and update UI
+     */
+    function loadSettings() {
+      // Theme settings
+      const darkMode = localStorage.getItem('settings-darkmode') === 'true';
+      // Default to light theme if not set
+      let theme = localStorage.getItem('settings-theme');
+      if (!theme) {
+        theme = 'light';
+        localStorage.setItem('settings-theme', 'light');
+      }
+      document.getElementById('settings-darkmode').checked = darkMode;
+      document.getElementById('settings-theme').value = theme;
+      // Accent color
+      const accent = localStorage.getItem('settings-accent') || '#4cc9f0';
+      document.querySelectorAll('.accent-swatch').forEach(btn => {
+        btn.classList.toggle('selected', btn.getAttribute('data-color') === accent);
+      });
+      setAccent(accent); // Ensure accent and blur patches update on load
+      // Notification settings
+      document.getElementById('notif-assignments').checked = localStorage.getItem('notif-assignments') !== 'false';
+      document.getElementById('notif-grades').checked = localStorage.getItem('notif-grades') !== 'false';
+      document.getElementById('notif-messages').checked = localStorage.getItem('notif-messages') !== 'false';
+      document.getElementById('notif-courses').checked = localStorage.getItem('notif-courses') !== 'false';
+      document.getElementById('notif-discussions').checked = localStorage.getItem('notif-discussions') !== 'false';
+    }
+    /**
+     * Set the theme based on user preference
+     * @param {string} theme - 'light' or 'dark'
+     */
+    function setTheme(theme) {
+      const root = document.documentElement;
+      if (theme === 'dark') {
+        root.style.setProperty('--dark', '#0a0a0a');
+        root.style.setProperty('--dark-gray', '#1a1a1a');
+        root.style.setProperty('--medium-gray', '#2d2d2d');
+        root.style.setProperty('--light-gray', '#3d3d3d');
+        root.style.setProperty('--text', '#ffffff');
+        root.style.setProperty('--text-light', '#b0b0b0');
+        document.body.classList.remove('light-theme');
+        // Remove accent blur patch for dark theme
+        root.style.removeProperty('--accent-light-bg');
+        console.log('Theme set to DARK');
+      } else {
+        root.style.setProperty('--dark', 'var(--light-dark)');
+        root.style.setProperty('--dark-gray', 'var(--light-dark-gray)');
+        root.style.setProperty('--medium-gray', 'var(--light-medium-gray)');
+        root.style.setProperty('--light-gray', 'var(--light-light-gray)');
+        root.style.setProperty('--text', 'var(--light-text)');
+        root.style.setProperty('--text-light', 'var(--light-text-light)');
+        document.body.classList.add('light-theme');
+        // Set accent blur patch for light theme
+        const accent = localStorage.getItem('settings-accent') || '#4cc9f0';
+        setAccentLightBg(accent);
+        console.log('Theme set to LIGHT');
+      }
+    }
+    /**
+     * Set the accent color and update accent blur patch for light theme
+     * @param {string} color - The hex color code
+     */
+    function setAccent(color) {
+      // Theme color sets
+      const themes = {
+        '#4cc9f0': { // Blue
+          primary: '#4361ee', primaryLight: '#4895ef', secondary: '#3f37c9', accent: '#4cc9f0', accentLightBg: 'rgba(76, 201, 240, 0.13)' },
+        '#f72585': { // Pink
+          primary: '#f72585', primaryLight: '#ff80ab', secondary: '#b5179e', accent: '#f72585', accentLightBg: 'rgba(247, 37, 133, 0.13)' },
+        '#ff9800': { // Orange
+          primary: '#ff9800', primaryLight: '#ffc107', secondary: '#ff5722', accent: '#ff9800', accentLightBg: 'rgba(255, 152, 0, 0.13)' },
+        '#43e97b': { // Green
+          primary: '#43e97b', primaryLight: '#38b000', secondary: '#008e5b', accent: '#43e97b', accentLightBg: 'rgba(67, 233, 123, 0.13)' },
+        '#7c3aed': { // Purple
+          primary: '#7c3aed', primaryLight: '#a78bfa', secondary: '#5b21b6', accent: '#7c3aed', accentLightBg: 'rgba(124, 58, 237, 0.13)' },
+        '#ff6f61': { // Coral
+          primary: '#ff6f61', primaryLight: '#ffb199', secondary: '#d7263d', accent: '#ff6f61', accentLightBg: 'rgba(255, 111, 97, 0.13)' }
+      };
+      const t = themes[color] || themes['#4cc9f0'];
+      document.documentElement.style.setProperty('--primary', t.primary);
+      document.documentElement.style.setProperty('--primary-light', t.primaryLight);
+      document.documentElement.style.setProperty('--secondary', t.secondary);
+      document.documentElement.style.setProperty('--accent', t.accent);
+      setAccentLightBg(color); // Update blur patch for light theme
+    }
+    /**
+     * Set the accent blur patch for light theme
+     * @param {string} color - The hex color code
+     */
+    function setAccentLightBg(color) {
+      const accentLightBgMap = {
+        '#4cc9f0': 'rgba(76, 201, 240, 0.13)',
+        '#f72585': 'rgba(247, 37, 133, 0.13)',
+        '#ff9800': 'rgba(255, 152, 0, 0.13)',
+        '#43e97b': 'rgba(67, 233, 123, 0.13)',
+        '#7c3aed': 'rgba(124, 58, 237, 0.13)',
+        '#ff6f61': 'rgba(255, 111, 97, 0.13)'
+      };
+      const accentLightBg = accentLightBgMap[color] || 'rgba(76, 201, 240, 0.13)';
+      document.documentElement.style.setProperty('--accent-light-bg', accentLightBg);
+    }
+    
+    // ========== EVENT LISTENERS ==========
+    // Initialize the app when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      // Load profile data
+      loadProfile();
+      // Load settings (sets accent, but does not set theme class)
+      loadSettings();
+      // Always default to light theme if not set
+      let theme = localStorage.getItem('settings-theme');
+      if (!theme) {
+        theme = 'light';
+        localStorage.setItem('settings-theme', 'light');
+        setTheme('light');
+      } else {
+        setTheme(theme);
+      }
+      
+      // Initialize video lectures
+      renderVideoList();
+      
+      // Initialize discussions
+      renderDiscussionList();
+      
+      // Animate progress bars
+      document.querySelectorAll('.progress-bar').forEach(bar => {
+        const width = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => {
+          bar.style.transition = 'width 1.2s cubic-bezier(.4,2,.6,1)';
+          bar.style.width = width;
+        }, 200);
+      });
+      
+      // Set up sidebar navigation
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function() {
+          // Remove active class from all links
+          document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+          
+          // Add active class to clicked link
+          this.classList.add('active');
+          
+          // Hide all tabs
+          document.querySelectorAll('.main-tab').forEach(tab => tab.style.display = 'none');
+          
+          // Show the correct tab based on link text
+          const text = this.textContent.trim();
+          const tabMap = {
+            'Dashboard': 'tab-dashboard',
+            'My Courses': 'tab-courses',
+            'Assignments': 'tab-assignments',
+            'Tests': 'tab-tests',
+            'Grades': 'tab-grades',
+            'Video Lectures': 'tab-videos',
+            'Discussion': 'tab-discussion',
+            'Profile': 'tab-profile',
+            'Settings': 'tab-settings'
+          };
+          
+          const tabId = tabMap[text];
+          if (tabId) {
+            document.getElementById(tabId).style.display = '';
+            
+            // Initialize specific tab content if needed
+            if (tabId === 'tab-profile') loadProfile();
+            if (tabId === 'tab-settings') loadSettings();
+            if (tabId === 'tab-videos') renderVideoList();
+            if (tabId === 'tab-discussion') renderDiscussionList();
+            if (tabId === 'tab-tests') {
+              testState = { started: false, finished: false, answers: [], timeLeft: sampleTest.duration, timer: null };
+              renderTest();
+            }
+          } else {
+            // Default to dashboard if no match
+            document.getElementById('tab-dashboard').style.display = '';
+          }
+          
+          // Close sidebar on mobile after selection
+          if (window.innerWidth <= 768) {
+            document.getElementById('sidebar').classList.remove('open');
+          }
+        });
+      });
+      
+      // Handle video search and filter
+      document.getElementById('video-search').addEventListener('input', renderVideoList);
+      document.getElementById('video-filter').addEventListener('change', renderVideoList);
+      
+      // Handle discussion form submission
+      document.getElementById('discussion-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const title = document.getElementById('discussion-title').value.trim();
+        const tags = document.getElementById('discussion-tags').value.split(',').map(t => t.trim()).filter(Boolean);
+        
+        if (!title) return;
+        
+        // Add new thread
+        discussions.unshift({
+          title,
+          author: 'You',
+          tags,
+          replies: [],
+          lastActivity: new Date().toLocaleString()
+        });
+        
+        // Save to localStorage
+        localStorage.setItem('discussions', JSON.stringify(discussions));
+        
+        // Reset form
+        this.reset();
+        
+        // Refresh the list
+        renderDiscussionList();
+      });
+      
+      // Handle settings changes
+      document.getElementById('settings-darkmode').addEventListener('change', function() {
+        localStorage.setItem('settings-darkmode', this.checked);
+        setTheme(this.checked ? 'dark' : 'light');
+      });
+      
+      document.getElementById('settings-theme').addEventListener('change', function() {
+        localStorage.setItem('settings-theme', this.value);
+        setTheme(this.value);
+      });
+      
+      document.querySelectorAll('.accent-swatch').forEach(btn => {
+        btn.addEventListener('click', function() {
+          localStorage.setItem('settings-accent', this.getAttribute('data-color'));
+          document.querySelectorAll('.accent-swatch').forEach(b => b.classList.remove('selected'));
+          this.classList.add('selected');
+          setAccent(this.getAttribute('data-color'));
+        });
+      });
+      
+      // Notification toggles
+      ['notif-assignments','notif-grades','notif-messages','notif-courses','notif-discussions'].forEach(id => {
+        document.getElementById(id).addEventListener('change', function() {
+          localStorage.setItem(id, this.checked);
+        });
+      });
+      
+      // Bookmark toggle for courses
+      document.querySelectorAll('.course-card-bookmark').forEach(icon => {
+        icon.addEventListener('click', function(e) {
+          e.stopPropagation();
+          this.classList.toggle('bookmarked');
+        });
+      });
+      
+      // Course card click handler
+      document.querySelectorAll('.course-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const title = this.querySelector('.course-card-title').textContent;
+          document.getElementById('course-modal-title').textContent = title;
+          openModal('course-modal');
+        });
+      });
+      
+      // Assignment card click handler
+      document.querySelectorAll('.assignment-card').forEach(card => {
+        card.addEventListener('click', function() {
+          const title = this.querySelector('.assignment-title').textContent;
+          const desc = this.querySelector('.assignment-description').textContent;
+          document.getElementById('assignment-modal-title').textContent = title;
+          document.getElementById('assignment-modal-description').textContent = desc;
+          openModal('assignment-modal');
+        });
+      });
+      
+      // Handle window resize for responsive behavior
+      window.addEventListener('resize', function() {
+        const sidebar = document.getElementById('sidebar');
+        
+        if (window.innerWidth <= 768) {
+          // On mobile, ensure sidebar is closed by default
+          sidebar.classList.remove('open');
+          document.body.classList.remove('sidebar-collapsed');
+        } else {
+          // On desktop, ensure sidebar is visible
+          sidebar.classList.remove('open');
+        }
+      });
+      
+    });
+
+    // ========== PROFILE SETTINGS DROPDOWN ==========
+    function openProfileSettingsModal() {
+      // Load current avatar and name
+      const name = localStorage.getItem('profile-fullname') || 'John Doe';
+      document.getElementById('profile-settings-name').value = name;
+      // Avatar: check for image in localStorage
+      const avatarData = localStorage.getItem('profile-avatar-img');
+      const initials = name.trim().split(' ');
+      let avatarText = initials.length > 1 ? initials[0][0] + initials[initials.length-1][0] : initials[0][0];
+      const preview = document.getElementById('avatar-preview');
+      if (avatarData) {
+        preview.innerHTML = `<img src="${avatarData}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      } else {
+        preview.textContent = avatarText.toUpperCase();
+        preview.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+        preview.style.color = 'white';
+      }
+      openModal('profile-settings-modal');
+    }
+    document.getElementById('user-profile-settings').onclick = openProfileSettingsModal;
+    // Avatar upload
+    document.getElementById('avatar-upload').onchange = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        localStorage.setItem('profile-avatar-img', evt.target.result);
+        document.getElementById('avatar-preview').innerHTML = `<img src="${evt.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      };
+      reader.readAsDataURL(file);
+    };
+    // Remove avatar button logic
+    document.getElementById('remove-avatar-btn').onclick = function() {
+      localStorage.removeItem('profile-avatar-img');
+      // Reset preview to initials
+      const name = document.getElementById('profile-settings-name').value.trim() || 'John Doe';
+      const initialsArr = name.split(' ');
+      let avatarText = initialsArr.length > 1 ? initialsArr[0][0] + initialsArr[initialsArr.length-1][0] : initialsArr[0][0];
+      const preview = document.getElementById('avatar-preview');
+      preview.textContent = avatarText.toUpperCase();
+      preview.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+      preview.style.color = 'white';
+    };
+    // Save profile settings
+    document.getElementById('profile-settings-form').onsubmit = function(e) {
+      e.preventDefault();
+      const name = document.getElementById('profile-settings-name').value.trim();
+      if (name) localStorage.setItem('profile-fullname', name);
+      // Update topbar and profile
+      updateTopbarProfile();
+      loadProfile();
+      closeModal('profile-settings-modal');
+    };
+    function updateTopbarProfile() {
+      const name = localStorage.getItem('profile-fullname') || 'John Doe';
+      const avatarData = localStorage.getItem('profile-avatar-img');
+      const initials = name.trim().split(' ');
+      let avatarText = initials.length > 1 ? initials[0][0] + initials[initials.length-1][0] : initials[0][0];
+      document.getElementById('topbar-name').textContent = name;
+      const avatarElem = document.getElementById('topbar-avatar');
+      if (avatarData) {
+        avatarElem.innerHTML = `<img src="${avatarData}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+      } else {
+        avatarElem.textContent = avatarText.toUpperCase();
+        avatarElem.style.background = 'linear-gradient(135deg, var(--primary), var(--secondary))';
+        avatarElem.style.color = 'white';
+      }
+      // Update welcome message
+      var welcome = document.getElementById('welcome-message');
+      if (welcome) welcome.textContent = 'Welcome back, ' + (localStorage.getItem('profile-fullname') || 'John Smith') + '!';
+    }
+    // On load, update topbar profile
+    document.addEventListener('DOMContentLoaded', updateTopbarProfile);
+
+    // Hide all main tabs except dashboard by default
+    document.querySelectorAll('.main-tab').forEach(tab => {
+      if (tab.id !== 'tab-dashboard') tab.style.display = 'none';
+    });
+
+    setAccent(localStorage.getItem('settings-accent') || '#4cc9f0');
+
+    // --- DEMO DATA for search (replace with real data in production) ---
+    const demoCourses = [
+      { title: 'Data Structures & Algorithms', tab: 'tab-courses' },
+      { title: 'Database Management Systems', tab: 'tab-courses' },
+      { title: 'Web Development', tab: 'tab-courses' }
+    ];
+    const demoAssignments = [
+      { title: 'Quantum Physics Problem Set', tab: 'tab-assignments' },
+      { title: 'Machine Learning Project', tab: 'tab-assignments' },
+      { title: 'Binary Search Tree Implementation', tab: 'tab-assignments' },
+      { title: 'Database Design Project', tab: 'tab-assignments' }
+    ];
+    const demoGrades = [
+      { title: 'Data Structures & Algorithms', tab: 'tab-grades' },
+      { title: 'Database Management Systems', tab: 'tab-grades' },
+      { title: 'Web Development', tab: 'tab-grades' }
+    ];
+
+    // --- Topbar Search Functionality ---
+    const topbarSearch = document.getElementById('topbar-search');
+    const topbarDropdown = document.getElementById('topbar-search-dropdown');
+
+    function highlightMatch(text, query) {
+      if (!query) return text;
+      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return text.replace(regex, '<span class="topbar-search-highlight">$1</span>');
+    }
+
+    function showTopbarDropdown(results) {
+      if (!results.length) {
+        topbarDropdown.innerHTML = '<div class="topbar-search-section">No results found</div>';
+        topbarDropdown.classList.add('active');
+        return;
+      }
+      let html = '';
+      for (const section of results) {
+        if (section.items.length) {
+          html += `<div class="topbar-search-section">${section.label}</div>`;
+          for (const item of section.items) {
+            html += `<div class="topbar-search-result" data-tab="${item.tab}" data-title="${item.title}">${item.html}</div>`;
+          }
+        }
+      }
+      topbarDropdown.innerHTML = html;
+      topbarDropdown.classList.add('active');
+    }
+
+    function hideTopbarDropdown() {
+      topbarDropdown.classList.remove('active');
+    }
+
+    topbarSearch.addEventListener('input', function() {
+      const query = this.value.trim().toLowerCase();
+      if (!query) {
+        hideTopbarDropdown();
+        return;
+      }
+      // Search demo data
+      const courseMatches = demoCourses.filter(c => c.title.toLowerCase().includes(query)).map(c => ({ ...c, html: highlightMatch(c.title, query) }));
+      const assignmentMatches = demoAssignments.filter(a => a.title.toLowerCase().includes(query)).map(a => ({ ...a, html: highlightMatch(a.title, query) }));
+      const gradeMatches = demoGrades.filter(g => g.title.toLowerCase().includes(query)).map(g => ({ ...g, html: highlightMatch(g.title, query) }));
+      showTopbarDropdown([
+        { label: 'Courses', items: courseMatches },
+        { label: 'Assignments', items: assignmentMatches },
+        { label: 'Grades', items: gradeMatches }
+      ]);
+    });
+
+    // Keyboard and click navigation
+    topbarDropdown.addEventListener('mousedown', function(e) {
+      const result = e.target.closest('.topbar-search-result');
+      if (result) {
+        const tab = result.getAttribute('data-tab');
+        // Show the relevant tab
+        document.querySelectorAll('.main-tab').forEach(tabEl => tabEl.style.display = 'none');
+        document.getElementById(tab).style.display = '';
+        // Optionally scroll to the item (demo: just focus tab)
+        hideTopbarDropdown();
+        topbarSearch.value = '';
+      }
+    });
+
+    // Hide dropdown on blur
+    topbarSearch.addEventListener('blur', function() {
+      setTimeout(hideTopbarDropdown, 120);
+    });
+
+    // Show dropdown on focus if query exists
+    topbarSearch.addEventListener('focus', function() {
+      if (this.value.trim()) {
+        topbarSearch.dispatchEvent(new Event('input'));
+      }
+    });
+
+    // --- Assignment Submission Logic ---
+    const assignmentData = [
+      {
+        course: 'Web Development',
+        title: 'React Component Library',
+        description: 'Create a reusable component library with at least 10 components.',
+        status: 'submitted',
+        due: '',
+        points: 120
+      },
+      {
+        course: 'Data Structures & Algorithms',
+        title: 'Binary Search Tree Implementation',
+        description: 'Implement a complete binary search tree with insertion, deletion, and traversal methods.',
+        status: 'overdue',
+        due: '6/23/2025',
+        points: 100
+      },
+      {
+        course: 'Database Management Systems',
+        title: 'Database Design Project',
+        description: 'Design and implement a normalized database schema for an e-commerce platform.',
+        status: 'pending',
+        due: '6/28/2025',
+        points: 150
+      }
+    ];
+
+    function getAssignmentKey(title) {
+      return 'assignment-submission-' + encodeURIComponent(title);
+    }
+
+    function renderAssignmentList() {
+      const list = document.querySelector('#tab-assignments .assignment-list');
+      list.innerHTML = '';
+      assignmentData.forEach((a, idx) => {
+        const key = getAssignmentKey(a.title);
+        const submission = localStorage.getItem(key);
+        const card = document.createElement('div');
+        card.className = 'assignment-card';
+        // Status badge
+        let badgeClass = 'pending', badgeIcon = 'fa-clock', badgeText = 'DUE SOON';
+        if (a.status === 'submitted' || submission) { badgeClass = 'submitted'; badgeIcon = 'fa-check-circle'; badgeText = 'SUBMITTED'; }
+        else if (a.status === 'overdue') { badgeClass = 'overdue'; badgeIcon = 'fa-exclamation-circle'; badgeText = 'OVERDUE'; }
+        card.innerHTML = `
+          <div class="assignment-status-badge ${badgeClass}">
+            <i class="fas ${badgeIcon}"></i> ${badgeText}
+          </div>
+          <span class="assignment-course">${a.course}</span>
+          <div class="assignment-title">${a.title}</div>
+          <div class="assignment-description">${a.description}</div>
+          <div class="assignment-meta">
+            <div class="assignment-meta-item ${badgeClass}">
+              <i class="fas ${badgeIcon}"></i> ${badgeText === 'SUBMITTED' ? 'Submitted' : (a.due ? 'Due: ' + a.due : '')}
+            </div>
+            <div class="assignment-meta-item">
+              <i class="fas fa-star"></i> ${a.points} points
+            </div>
+          </div>
+          <div class="assignment-actions" style="margin-top:10px;display:flex;gap:10px;align-items:center;">
+            ${submission
+              ? `<div style='display:flex;align-items:center;gap:8px;'>
+                   <button class="assignment-action" onclick="viewSubmission('${key}')">View Submission</button>
+                   <button class="assignment-action" title="Delete Submission" style="background:none;color:#d32f2f;padding:6px 10px;margin-left:0;" onclick="deleteSubmission(event, '${key}')"><i class='fas fa-trash'></i></button>
+                   <span style='font-size:0.97em;color:var(--success);margin-left:6px;'>${JSON.parse(submission).name}</span>
+                 </div>`
+              : `<input type="file" id="file-upload-${idx}" style="display:inline-block;">
+                 <button class="assignment-action submit" onclick="submitAssignment(event, '${key}', ${idx})">Submit Now</button>`
+            }
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function submitAssignment(e, key, idx) {
+      e.preventDefault();
+      const fileInput = document.getElementById('file-upload-' + idx);
+      if (!fileInput.files.length) {
+        alert('Please select a file to submit.');
+        return;
+      }
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        localStorage.setItem(key, JSON.stringify({
+          name: file.name,
+          data: evt.target.result,
+          type: file.type
+        }));
+        renderAssignmentList();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function viewSubmission(key) {
+      const data = localStorage.getItem(key);
+      if (!data) return;
+      const { name, data: fileData, type } = JSON.parse(data);
+      // Create a download link and click it
+      const a = document.createElement('a');
+      a.href = fileData;
+      a.download = name;
+      a.target = '_blank';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    // Render assignments on tab switch and on load
+    document.addEventListener('DOMContentLoaded', function() {
+      renderAssignmentList();
+      // Also re-render when switching to assignments tab
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function() {
+          if (this.textContent.trim() === 'Assignments') {
+            renderAssignmentList();
+          }
+        });
+      });
+    });
+    window.submitAssignment = submitAssignment;
+    window.viewSubmission = viewSubmission;
+
+
+
+    function deleteSubmission(e, key) {
+      e.preventDefault();
+      if (confirm('Delete your submission for this assignment?')) {
+        localStorage.removeItem(key);
+        renderAssignmentList();
+      }
+    }
+    window.deleteSubmission = deleteSubmission;
+
+    // ========== COURSE CHAT FUNCTIONS ==========
+    let currentCourseChat = null;
+    let courseChatMessages = {};
+
+    /**
+     * Open course chat modal
+     * @param {string} courseName - Name of the course
+     * @param {string} instructorName - Name of the instructor
+     */
+    function openCourseChat(courseName, instructorName) {
+      currentCourseChat = courseName;
+      
+      // Set modal content
+      document.getElementById('course-chat-course-name').textContent = courseName;
+      document.getElementById('course-chat-instructor-name').textContent = instructorName;
+      
+      // Set instructor avatar based on course
+      const instructorAvatars = {
+        'Dr. Johnson': 'https://randomuser.me/api/portraits/men/32.jpg',
+        'Prof. Chen': 'https://randomuser.me/api/portraits/men/45.jpg',
+        'Mr. Rodriguez': 'https://randomuser.me/api/portraits/men/52.jpg'
+      };
+      document.getElementById('course-chat-instructor-avatar').src = instructorAvatars[instructorName] || 'https://randomuser.me/api/portraits/men/1.jpg';
+      
+      // Load messages for this course
+      loadCourseChatMessages(courseName);
+      
+      // Open modal
+      openModal('course-chat-modal');
+      
+      // Focus on input
+      setTimeout(() => {
+        document.getElementById('course-chat-input').focus();
+      }, 100);
+    }
+
+    /**
+     * Load chat messages for a specific course
+     * @param {string} courseName - Name of the course
+     */
+    function loadCourseChatMessages(courseName) {
+      const messagesContainer = document.getElementById('course-chat-messages');
+      const courseKey = `course-chat-${encodeURIComponent(courseName)}`;
+      
+      // Load messages from localStorage
+      let messages = JSON.parse(localStorage.getItem(courseKey) || '[]');
+      
+      // If no messages exist, create some demo messages
+      if (messages.length === 0) {
+        const instructorNames = {
+          'Data Structures & Algorithms': 'Dr. Johnson',
+          'Database Management Systems': 'Prof. Chen',
+          'Web Development': 'Mr. Rodriguez'
+        };
+        
+        const instructorName = instructorNames[courseName];
+        const demoMessages = [
+          {
+            id: 1,
+            author: instructorName,
+            text: `Welcome to ${courseName}! I'm here to help you with any questions you might have.`,
+            timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+            isInstructor: true
+          },
+          {
+            id: 2,
+            author: 'You',
+            text: 'Thank you! I have a question about the latest assignment.',
+            timestamp: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
+            isInstructor: false
+          },
+          {
+            id: 3,
+            author: instructorName,
+            text: 'Of course! What would you like to know?',
+            timestamp: new Date(Date.now() - 1800000).toISOString(), // 30 minutes ago
+            isInstructor: true
+          }
+        ];
+        
+        messages = demoMessages;
+        localStorage.setItem(courseKey, JSON.stringify(messages));
+      }
+      
+      // Store messages for current session
+      courseChatMessages[courseName] = messages;
+      
+      // Render messages
+      renderCourseChatMessages(messages);
+    }
+
+    /**
+     * Render chat messages in the modal
+     * @param {Array} messages - Array of message objects
+     */
+    function renderCourseChatMessages(messages) {
+      const container = document.getElementById('course-chat-messages');
+      container.innerHTML = '';
+      
+      messages.forEach(message => {
+        const messageElement = document.createElement('div');
+        messageElement.className = `course-chat-message ${message.isInstructor ? '' : 'sent'}`;
+        
+        const avatar = document.createElement('div');
+        avatar.className = 'course-chat-message-avatar';
+        avatar.textContent = message.author.split(' ').map(n => n[0]).join('').toUpperCase();
+        
+        const content = document.createElement('div');
+        content.className = 'course-chat-message-content';
+        
+        const header = document.createElement('div');
+        header.className = 'course-chat-message-header';
+        
+        const author = document.createElement('div');
+        author.className = 'course-chat-message-author';
+        author.textContent = message.author;
+        
+        const time = document.createElement('div');
+        time.className = 'course-chat-message-time';
+        time.textContent = formatMessageTime(message.timestamp);
+        
+        const text = document.createElement('div');
+        text.className = 'course-chat-message-text';
+        text.textContent = message.text;
+        
+        header.appendChild(author);
+        header.appendChild(time);
+        content.appendChild(header);
+        content.appendChild(text);
+        
+        messageElement.appendChild(avatar);
+        messageElement.appendChild(content);
+        
+        container.appendChild(messageElement);
+      });
+      
+      // Scroll to bottom
+      container.scrollTop = container.scrollHeight;
+    }
+
+    /**
+     * Send a message in the course chat
+     */
+    function sendCourseMessage() {
+      const input = document.getElementById('course-chat-input');
+      const message = input.value.trim();
+      
+      if (!message || !currentCourseChat) return;
+      
+      // Create new message
+      const newMessage = {
+        id: Date.now(),
+        author: 'You',
+        text: message,
+        timestamp: new Date().toISOString(),
+        isInstructor: false
+      };
+      
+      // Add to messages array
+      courseChatMessages[currentCourseChat].push(newMessage);
+      
+      // Save to localStorage
+      const courseKey = `course-chat-${encodeURIComponent(currentCourseChat)}`;
+      localStorage.setItem(courseKey, JSON.stringify(courseChatMessages[currentCourseChat]));
+      
+      // Render updated messages
+      renderCourseChatMessages(courseChatMessages[currentCourseChat]);
+      
+      // Clear input
+      input.value = '';
+      
+      // Simulate instructor response after 2-5 seconds
+      setTimeout(() => {
+        simulateInstructorResponse();
+      }, Math.random() * 3000 + 2000);
+    }
+
+    /**
+     * Simulate instructor response
+     */
+    function simulateInstructorResponse() {
+      if (!currentCourseChat) return;
+      
+      const instructorNames = {
+        'Data Structures & Algorithms': 'Dr. Johnson',
+        'Database Management Systems': 'Prof. Chen',
+        'Web Development': 'Mr. Rodriguez'
+      };
+      
+      const instructorName = instructorNames[currentCourseChat];
+      const responses = [
+        'Thank you for your question! I\'ll get back to you soon.',
+        'That\'s a great question. Let me think about the best way to explain this.',
+        'I appreciate you reaching out. Here\'s what I can tell you about that.',
+        'Thanks for asking! This is an important concept to understand.',
+        'I\'m glad you\'re engaging with the material. Let me clarify that for you.',
+        'Excellent question! This relates to what we discussed in the last lecture.',
+        'I understand your concern. Let me provide some additional resources.',
+        'That\'s a common question. Here\'s how I usually approach this topic.'
+      ];
+      
+      const response = responses[Math.floor(Math.random() * responses.length)];
+      
+      const instructorMessage = {
+        id: Date.now(),
+        author: instructorName,
+        text: response,
+        timestamp: new Date().toISOString(),
+        isInstructor: true
+      };
+      
+      // Add to messages array
+      courseChatMessages[currentCourseChat].push(instructorMessage);
+      
+      // Save to localStorage
+      const courseKey = `course-chat-${encodeURIComponent(currentCourseChat)}`;
+      localStorage.setItem(courseKey, JSON.stringify(courseChatMessages[currentCourseChat]));
+      
+      // Render updated messages
+      renderCourseChatMessages(courseChatMessages[currentCourseChat]);
+    }
+
+    /**
+     * Format message timestamp
+     * @param {string} timestamp - ISO timestamp string
+     * @returns {string} Formatted time string
+     */
+    function formatMessageTime(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diff = now - date;
+      
+      if (diff < 60000) { // Less than 1 minute
+        return 'Just now';
+      } else if (diff < 3600000) { // Less than 1 hour
+        const minutes = Math.floor(diff / 60000);
+        return `${minutes}m ago`;
+      } else if (diff < 86400000) { // Less than 1 day
+        const hours = Math.floor(diff / 3600000);
+        return `${hours}h ago`;
+      } else {
+        return date.toLocaleDateString();
+      }
+    }
+
+    // Add event listener for Enter key in chat input
+    document.addEventListener('DOMContentLoaded', function() {
+      const chatInput = document.getElementById('course-chat-input');
+      if (chatInput) {
+        chatInput.addEventListener('keypress', function(e) {
+          if (e.key === 'Enter') {
+            sendCourseMessage();
+          }
+        });
+      }
+    });
+
+    // ========== AI CHATBOT ==========
+    const aiBtn = document.getElementById('ai-chatbot-btn');
+    const aiModal = document.getElementById('ai-chatbot-modal');
+    const aiForm = document.getElementById('ai-chatbot-form');
+    const aiInput = document.getElementById('ai-chatbot-input');
+    const aiMessages = document.getElementById('ai-chatbot-messages');
+    aiBtn.onclick = function(e) {
+      e.preventDefault();
+      aiModal.style.display = 'flex';
+      aiInput.focus();
+      aiMessages.innerHTML = '<div style="color:#888;text-align:center;font-size:0.98rem;">Hi! I\'m EduSync AI. Ask me anything about your dashboard, assignments, or courses.</div>';
+    };
+    function closeAIChatbot() {
+      aiModal.style.display = 'none';
+    }
+    aiForm.onsubmit = function(e) {
+      e.preventDefault();
+      const userMsg = aiInput.value.trim();
+      if (!userMsg) return;
+      appendAIMsg('user', userMsg);
+      aiInput.value = '';
+      setTimeout(() => {
+        appendAIMsg('bot', getAIMockResponse(userMsg));
+      }, 700);
+    };
+    function appendAIMsg(sender, text) {
+      const msg = document.createElement('div');
+      msg.style.display = 'flex';
+      msg.style.alignItems = 'flex-start';
+      msg.style.gap = '8px';
+      msg.style.marginBottom = '2px';
+      if (sender === 'user') {
+        msg.innerHTML = `<div style='background:var(--primary);color:#fff;padding:8px 14px;border-radius:12px 12px 2px 12px;align-self:flex-end;max-width:80%;margin-left:auto;'>${text}</div>`;
+      } else {
+        msg.innerHTML = `<div style='background:#e9ecef;color:var(--primary);padding:8px 14px;border-radius:12px 12px 12px 2px;max-width:80%;'><i class='fas fa-robot' style='margin-right:6px;'></i>${text}</div>`;
+      }
+      aiMessages.appendChild(msg);
+      aiMessages.scrollTop = aiMessages.scrollHeight;
+    }
+    function getAIMockResponse(msg) {
+      msg = msg.toLowerCase();
+      if (msg.includes('assignment')) return 'To view or submit assignments, go to the Assignments tab. You can upload your work and check deadlines there.';
+      if (msg.includes('test') || msg.includes('exam')) return 'You can access your tests in the Tests tab. Click on a test to begin or review your results.';
+      if (msg.includes('profile')) return 'You can view and edit your profile in the Profile tab. Click the Edit Profile button to update your info.';
+      if (msg.includes('grades') || msg.includes('gpa')) return 'Your grades and GPA are available in the Grades tab. You can also export your grade report.';
+      if (msg.includes('course')) return 'All your enrolled courses are listed in the My Courses tab. Click a course for details and resources.';
+      if (msg.includes('video')) return 'Video lectures are available in the Video Lectures tab. You can search and filter by topic.';
+      if (msg.includes('discussion')) return 'Join community discussions in the Discussion tab. You can post new topics or reply to others.';
+      if (msg.includes('settings')) return 'You can customize your experience in the Settings tab, including theme and notifications.';
+      if (msg.includes('hello') || msg.includes('hi')) return 'Hello! How can I help you with EduSync today?';
+      return 'I\'m here to help you with anything related to EduSync. Try asking about assignments, courses, grades, or settings!';
+    }
+  </script>
+  <!-- AI Chatbot Modal -->
+  <div class="modal" id="ai-chatbot-modal" style="z-index:4000;display:none;align-items:center;justify-content:center;">
+    <div class="modal-content" style="min-width:340px;max-width:95vw;padding:0;border-radius:18px;box-shadow:0 8px 32px rgba(67,97,238,0.18);overflow:hidden;">
+      <div style="background:var(--primary);color:#fff;padding:16px 20px;font-weight:700;display:flex;align-items:center;justify-content:space-between;">
+        <span><i class="fas fa-robot"></i> EduSync AI</span>
+        <button class="modal-close" style="color:#fff;font-size:1.3rem;background:none;border:none;" onclick="closeAIChatbot()"><i class="fas fa-times"></i></button>
+      </div>
+      <div id="ai-chatbot-messages" style="background:#f7f8fa;min-height:220px;max-height:320px;overflow-y:auto;padding:18px 16px 12px 16px;display:flex;flex-direction:column;gap:12px;"></div>
+      <form id="ai-chatbot-form" style="display:flex;gap:8px;padding:14px 16px 14px 16px;background:#fff;border-top:1px solid #e0e0e0;">
+        <input id="ai-chatbot-input" type="text" placeholder="Ask me anything about EduSync..." style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid #e0e0e0;font-size:1rem;" autocomplete="off" required>
+        <button type="submit" style="background:var(--primary);color:#fff;border:none;border-radius:8px;padding:0 18px;font-size:1.2rem;cursor:pointer;"><i class="fas fa-paper-plane"></i></button>
+      </form>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var aiBtn = document.getElementById('ai-chatbot-btn');
+      var aiModal = document.getElementById('ai-chatbot-modal');
+      var aiForm = document.getElementById('ai-chatbot-form');
+      var aiInput = document.getElementById('ai-chatbot-input');
+      var aiMessages = document.getElementById('ai-chatbot-messages');
+      var aiClose = aiModal ? aiModal.querySelector('.modal-close') : null;
+      if (aiBtn && aiModal) {
+        aiBtn.onclick = function(e) {
+          e.preventDefault();
+          aiModal.style.display = 'flex';
+          aiInput.focus();
+          aiMessages.innerHTML = '<div style="color:#888;text-align:center;font-size:0.98rem;">Hi! I\'m EduSync AI. Ask me anything about your dashboard, assignments, or courses.</div>';
+        };
+      }
+      if (aiClose) {
+        aiClose.onclick = function() { aiModal.style.display = 'none'; };
+      }
+      if (aiForm && aiInput && aiMessages) {
+        aiForm.onsubmit = function(e) {
+          e.preventDefault();
+          const userMsg = aiInput.value.trim();
+          if (!userMsg) return;
+          appendAIMsg('user', userMsg);
+          aiInput.value = '';
+          setTimeout(() => {
+            appendAIMsg('bot', getAIMockResponse(userMsg));
+          }, 700);
+        };
+        function appendAIMsg(sender, text) {
+          const msg = document.createElement('div');
+          msg.style.display = 'flex';
+          msg.style.alignItems = 'flex-start';
+          msg.style.gap = '8px';
+          msg.style.marginBottom = '2px';
+          if (sender === 'user') {
+            msg.innerHTML = `<div style='background:var(--primary);color:#fff;padding:8px 14px;border-radius:12px 12px 2px 12px;align-self:flex-end;max-width:80%;margin-left:auto;'>${text}</div>`;
+          } else {
+            msg.innerHTML = `<div style='background:#e9ecef;color:var(--primary);padding:8px 14px;border-radius:12px 12px 12px 2px;max-width:80%;'><i class='fas fa-robot' style='margin-right:6px;'></i>${text}</div>`;
+          }
+          aiMessages.appendChild(msg);
+          aiMessages.scrollTop = aiMessages.scrollHeight;
+        }
+        function getAIMockResponse(msg) {
+          msg = msg.toLowerCase();
+          if (msg.includes('assignment')) return 'To view or submit assignments, go to the Assignments tab. You can upload your work and check deadlines there.';
+          if (msg.includes('test') || msg.includes('exam')) return 'You can access your tests in the Tests tab. Click on a test to begin or review your results.';
+          if (msg.includes('profile')) return 'You can view and edit your profile in the Profile tab. Click the Edit Profile button to update your info.';
+          if (msg.includes('grades') || msg.includes('gpa')) return 'Your grades and GPA are available in the Grades tab. You can also export your grade report.';
+          if (msg.includes('course')) return 'All your enrolled courses are listed in the My Courses tab. Click a course for details and resources.';
+          if (msg.includes('video')) return 'Video lectures are available in the Video Lectures tab. You can search and filter by topic.';
+          if (msg.includes('discussion')) return 'Join community discussions in the Discussion tab. You can post new topics or reply to others.';
+          if (msg.includes('settings')) return 'You can customize your experience in the Settings tab, including theme and notifications.';
+          if (msg.includes('hello') || msg.includes('hi')) return 'Hello! How can I help you with EduSync today?';
+          return 'I\'m here to help you with anything related to EduSync. Try asking about assignments, courses, grades, or settings!';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
