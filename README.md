@@ -6,12 +6,6 @@
 
 A production-ready student portal built with **Next.js 15**, designed to centralize learning, assessments, collaboration, and student engagement in a single intuitive experience.
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge\&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?style=for-the-badge\&logo=typescript)
-![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-38BDF8?style=for-the-badge\&logo=tailwind-css)
-![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge\&logo=react)
-![Zustand](https://img.shields.io/badge/Zustand-State_Management-orange?style=for-the-badge)
-
 </div>
 
 ---
